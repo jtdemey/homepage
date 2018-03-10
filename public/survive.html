@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<title>Survive</title>
+		<link rel="stylesheet" type="text/css" media="screen" href="/survive/survive_look.css" title="Default">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	</head>
+<body>
+	<div class="survive-content">
+		<div class="mainconsole">
+      <div class="tickdisplay"></div>
+      <div class="line-area"></div>
+      <div class="cl-area">
+        <input type="text" name="commandline" class="form-control commandline" placeholder=">>" autofocus></input>
+      </div>
+    </div>
+	</div>
+	<footer class="text-center">
+		<h6>Designed by JD</h6>
+		<h5>Current build: alpha1.2</h5>
+	</footer>
+</body>
+</html>
+<script src="/survive/Parser.js"></script>
+<script src="/survive/Player.js"></script>
+<script src="/survive/createGame.js"></script>
+<script>
+$(document).ready(function() {
+
+/*
+	GAME NOTES
+	-Areas
+		-Forest
+			-Constant temp drain
+			-Wabbajack-like predator
+			-Day cycle
+				-Night = increased difficulty
+		-Mansion
+			-Deranged hunter
+		-Cemetery
+      -Territorial ghoul
+	-Character
+		-Nameless
+		-Inventory
+			-Flashlight + some batteries
+			-Lighter
+		    -Can light fires with tinder
+
+*/
+  //GLOBALS
+  var tick = 0;
+  //INITIATE
+  startClock();
+  //I/O
+  $('.commandline').on('keydown',function(e) {
+    if(e.keyCode == 13) {
+      var rawinput = $('.commandline').val();
+      rawinput = rawinput.trim();
+      $('.commandline').val('');
+      var commcode = Parser.parse(rawinput);
+    }
+  });
+
+  //GAME
+  async function updateGame() {
+    if(tick < 12) {
+      openingRoll(tick);
+    } else {
+      Player.onTick(tick);
+      Player.locale.onTick(tick);
+    }
+  }
+
+  //CORE FUNCTIONS
+  async function startClock() {
+    while(tick < 100) {
+      updateGame();
+      tick = tick + 1;
+      await sleep(1000);
+      $('.tickdisplay').text(tick);
+      //Cleanup
+      var highest = $('p:first').css('bottom');
+      if(parseInt(highest) > 1000) {
+        $('p:first').remove();
+      }
+    }
+  }
+
+  //UTILITIES
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+});
+
+function executeCommand(comm) {
+  switch(comm[0]) {
+    case "GO":
+      var dir = comm[1];
+      changeLocale(dir);
+  }
+}
+
+function openingRoll(tick) {
+  if(tick == 2) {
+    appendLine("A dirt backroad.");
+  }
+  if(tick == 3) {
+    appendLine("Caledonia County, Vermont.");
+  }
+  if(tick == 4) {
+    appendLine("December 13th, 1987. 2:44AM.");
+  }
+  if(tick == 6) {
+    appendLineC("Survive.", "red");
+  }
+  if(tick == 9) {
+    appendLine("The engine stalls.");
+  }
+  if(tick == 11) {
+    appendLine("Your car comes to a stop.");
+  }
+}
+
+function changeLocale(dir) {
+  try {
+    if(Player.locale.exits[CARDINAL_DIRS[dir]] != 0) {
+      Player.lastLocale = Player.locale;
+      Player.locale = Player.locale.exits[0];
+      Player.locale.visits += 1;
+      appendLine(Player.locale.enterPhrase);
+    } else {
+      if(Player.locale.exitPhrases[CARDINAL_DIRS[dir]] != 0) {
+        appendLine(Player.locale.exitPhrases[CARDINAL_DIRS[dir]]);
+      } else {
+       appendLineR(["You can't go that way.", "There's nothing in that direction."]);
+      }
+    }
+  } catch(err) {
+    appendLineC("!!ERROR: unable to change player locale!!", "red");
+  }
+}
+</script>

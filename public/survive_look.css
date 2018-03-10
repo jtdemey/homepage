@@ -1,0 +1,87 @@
+html {
+  height: 100%;
+  width: 100%;
+  background-color: #595959;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: #595959;
+}
+
+header {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.top-banner {
+  padding: 0;
+  margin: 0;
+  height: 120px;
+  width: 100%;
+}
+
+.banner-jt {
+  height: 120px;
+  width: 100%;
+  background-color: #4d4d4d;
+}
+
+.banner-title {
+  margin: 0;
+  padding-top: 3%;
+  font-family: "Titillium Web";
+  font-size: 200%;
+}
+
+#jssandbox-container {
+  background: #595959;
+  width: 100%;
+  height: 90%;
+  margin: auto;
+  overflow: hidden;
+}
+
+.mainconsole {
+  width: 600px;
+  height: 800px;
+  margin: auto;
+  margin-top: 0px;
+  overflow: hidden;
+  background-color: #999999;
+}
+
+.scrollarea {
+  position: relative;
+  width: 600px;
+  height: 800px;
+}
+
+.cmdline-container {
+  margin: auto;
+  margin-bottom: 10px;
+  width: 600px;
+}
+
+.commandline {
+  width: 46%;
+}
+
+.line {
+  left: 10%;
+  bottom: -25px;
+  position: absolute;
+  font-family: "Titillium Web";
+  font-size: 175%;
+}
+
+.tickdisplay {
+  position: relative;
+  width: 64px;
+  height: 0px;
+  color: orange;
+}
