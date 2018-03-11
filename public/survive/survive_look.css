@@ -1,0 +1,65 @@
+* {
+	font-family: "Arial";
+	padding: 0;
+	margin: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+a {
+	color: #0b3300;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #9bff80;
+	text-decoration: none;
+}
+
+h1 {
+	font-family: "Abel", sans-serif;
+}
+
+html, body, .container-fluid {
+	background: #999999;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.survive-content {
+	width: inherit;
+	height: inherit;
+	margin: auto;
+}
+
+.mainconsole {
+	width: inherit;
+	height: inherit;
+	margin: auto;
+	overflow: hidden;
+	background: #d9d9d9;
+}
+
+.line-area {
+	width: inherit;
+	height: inherit;
+	margin: auto;
+	overflow: hidden;
+}
+
+.cl-area {
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	height: 4em;
+	margin: auto;
+}
+
+.commandline {
+	width: 12em;
+	height: inherit;
+	margin: auto;
+}
