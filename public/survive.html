@@ -11,16 +11,31 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 		<!-- Latest compiled and minified JavaScript -->
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src="//cdn.jsdelivr.net/jquery.color-animation/1/mainfile"></script>
 	</head>
 <body>
 	<div class="survive-content">
 		<div class="mainconsole">
-      <div class="tickdisplay"></div>
-      <div class="line-area"></div>
-      <div class="cl-area">
-        <input type="text" name="commandline" class="form-control commandline" placeholder=">>" autofocus></input>
-      </div>
-    </div>
+			<div class="tickdisplay"></div>
+			<div class="line-area"></div>
+			<div class="cl-area">
+				<input type="text" name="commandline" class="form-control commandline" placeholder=">>" autofocus></input>
+			</div>
+		</div>
+	</div>
+	<div class="nav-tabs">
+		<div class="nav-tab home-tab">
+			<span class="tab-icon home-icon"><img class="tab-img" src="/survive/tabicon1.svg"></span>
+		</div>
+		<div class="nav-tab inventory-tab">
+			<span class="tab-icon inventory-icon"><img class="tab-img" src="/survive/tabicon2.svg"></span>
+		</div>
+		<div class="nav-tab crafting-tab">
+			<span class="tab-icon crafting-icon"><img class="tab-img" src="/survive/tabicon3.svg"></span>
+		</div>
+		<div class="nav-tab status-tab">
+			<span class="tab-icon status-icon"><img class="tab-img" src="/survive/tabicon4.svg"></span>
+		</div>
 	</div>
 	<footer class="text-center">
 		<h6>Designed by JD</h6>
@@ -33,7 +48,6 @@
 <script src="/survive/createGame.js"></script>
 <script>
 $(document).ready(function() {
-
 /*
 	GAME NOTES
 	-Areas
@@ -56,8 +70,20 @@ $(document).ready(function() {
 */
   //GLOBALS
   var tick = 0;
+  var gameTime = new Date(1987, 11, 13, 2, 44, 0, 0);
+  var displayTime = "Dec 13, 1987 2:44";
+  $('.tickdisplay').text(displayTime);
+  //DYNAMISM
+  $(window).resize(adjustTabs);
+  $('.nav-tab').on('mouseenter', function() {
+	console.log("uh");
+    $(this).stop().animate({backgroundColor: "#330000"}, 300);
+  }).on('mouseleave', function() {
+	$(this).stop().animate({backgroundColor: "#595959"}, 400);
+  });
   //INITIATE
   startClock();
+  adjustTabs();
   //I/O
   $('.commandline').on('keydown',function(e) {
     if(e.keyCode == 13) {
@@ -73,6 +99,8 @@ $(document).ready(function() {
     if(tick < 12) {
       openingRoll(tick);
     } else {
+	  if(tick % 10 == 0) { iterateTime(); }
+	  $('.tickdisplay').text(displayTime);
       Player.onTick(tick);
       Player.locale.onTick(tick);
     }
@@ -84,13 +112,31 @@ $(document).ready(function() {
       updateGame();
       tick = tick + 1;
       await sleep(1000);
-      $('.tickdisplay').text(tick);
       //Cleanup
       var highest = $('p:first').css('bottom');
       if(parseInt(highest) > 1000) {
         $('p:first').remove();
       }
     }
+  }
+  
+  async function iterateTime() {
+    gameTime.setMinutes(gameTime.getMinutes() + 1);
+    switch(gameTime.getMonth()) {
+  	  case 0: displayTime = "Jan"; break;
+	  case 1: displayTime = "Feb"; break;
+	  case 2: displayTime = "Mar"; break;
+	  case 3: displayTime = "Apr"; break;
+	  case 4: displayTime = "May"; break;
+	  case 5: displayTime = "Jun"; break;
+	  case 6: displayTime = "Jul"; break;
+	  case 7: displayTime = "Aug"; break;
+	  case 8: displayTime = "Sep"; break;
+	  case 9: displayTime = "Oct"; break;
+	  case 10: displayTime = "Nov"; break;
+	  case 11: displayTime = "Dec"; break;
+    }
+    displayTime = displayTime + " " + gameTime.getDate() + ", " + gameTime.getFullYear() + " " + gameTime.getHours() + ":" + gameTime.getMinutes();
   }
 
   //UTILITIES
@@ -125,10 +171,25 @@ function openingRoll(tick) {
   }
   if(tick == 11) {
     appendLine("Your car comes to a stop.");
+	$('.tickdisplay').fadeIn({queue: false, duration: "slow"}).animate({fontSize: "1em"}, 1000);
   }
 }
 
 function changeLocale(dir) {
+  try {
+	for(var i = 0; i < Player.locale.exits.length; i++) {
+      if(Player.locale.exits[i].dir == CARDINAL_DIRS[dir]) {
+	    Player.lastLocale = Player.locale;
+		Player.locale = gameMap[Player.locale.exits[i].destination];
+		Player.locale.visits += 1;
+		appendLine(Player.locale.enterPhrase);
+		return;
+	  }
+	}
+	appendLineR(["You can't go that way.", "There's nothing in that direction.", "There's something in the way."]);
+  } catch(err) {
+	appendLineC("!!ERROR: unable to change player locale!!", "red");
+  }
   try {
     if(Player.locale.exits[CARDINAL_DIRS[dir]] != 0) {
       Player.lastLocale = Player.locale;
@@ -145,5 +206,12 @@ function changeLocale(dir) {
   } catch(err) {
     appendLineC("!!ERROR: unable to change player locale!!", "red");
   }
+}
+
+function adjustTabs() {
+  var fw = $('.nav-tabs').width();
+  var fh = $('.nav-tabs').height();
+  $('.nav-tab').css({"width": ((fw / 4 - 3) + "px")});
+  $('.tab-img').css({"margin-top": ((fh / 2 - 50) + "px")});
 }
 </script>

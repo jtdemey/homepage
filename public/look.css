@@ -148,6 +148,7 @@ footer {
 	padding: 0;
 	overflow: hidden;
 	white-space: nowrap;
+	box-shadow: 1px 0px 5px black;
 }
 
 .nav-fixed {
@@ -393,6 +394,7 @@ footer {
 	float: left;
 	background: linear-gradient(to right, #3A6073, #16222A);
 	background-image: url("/media/pb0.png");
+	background-size: 140%;
 }
 
 .pb-bg {

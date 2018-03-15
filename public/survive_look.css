@@ -1,87 +1,65 @@
-html {
-  height: 100%;
-  width: 100%;
-  background-color: #595959;
+* {
+	font-family: "Arial";
+	padding: 0;
+	margin: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
-body {
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  min-height: 100%;
-  background-color: #595959;
+a {
+	color: #0b3300;
+	text-decoration: none;
 }
 
-header {
-  padding: 0;
-  margin: 0;
-  width: 100%;
+a:hover {
+	color: #9bff80;
+	text-decoration: none;
 }
 
-.top-banner {
-  padding: 0;
-  margin: 0;
-  height: 120px;
-  width: 100%;
+h1 {
+	font-family: "Abel", sans-serif;
 }
 
-.banner-jt {
-  height: 120px;
-  width: 100%;
-  background-color: #4d4d4d;
+html, body, .container-fluid {
+	background: #999999;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
 }
 
-.banner-title {
-  margin: 0;
-  padding-top: 3%;
-  font-family: "Titillium Web";
-  font-size: 200%;
-}
-
-#jssandbox-container {
-  background: #595959;
-  width: 100%;
-  height: 90%;
-  margin: auto;
-  overflow: hidden;
+.survive-content {
+	width: inherit;
+	height: inherit;
+	margin: auto;
 }
 
 .mainconsole {
-  width: 600px;
-  height: 800px;
-  margin: auto;
-  margin-top: 0px;
-  overflow: hidden;
-  background-color: #999999;
+	width: inherit;
+	height: inherit;
+	margin: auto;
+	overflow: hidden;
+	background: #d9d9d9;
 }
 
-.scrollarea {
-  position: relative;
-  width: 600px;
-  height: 800px;
+.line-area {
+	width: inherit;
+	height: inherit;
+	margin: auto;
+	overflow: hidden;
 }
 
-.cmdline-container {
-  margin: auto;
-  margin-bottom: 10px;
-  width: 600px;
+.cl-area {
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	height: 4em;
+	margin: auto;
 }
 
 .commandline {
-  width: 46%;
-}
-
-.line {
-  left: 10%;
-  bottom: -25px;
-  position: absolute;
-  font-family: "Titillium Web";
-  font-size: 175%;
-}
-
-.tickdisplay {
-  position: relative;
-  width: 64px;
-  height: 0px;
-  color: orange;
+	width: 12em;
+	height: inherit;
+	margin: auto;
 }

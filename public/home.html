@@ -194,6 +194,7 @@ $(document).ready(function() {
         }
     });
     $('.navlist li').on('mouseenter', function() {
+		refreshNavColors();
         if($(this).queue().length > 2) {
             console.log("eh");
             $('.navlist li, .nav-title').stop().clearQueue();
@@ -204,14 +205,12 @@ $(document).ready(function() {
         $(this).animate({backgroundColor: "#404040"}, 300);
     });
     $('.ni-home').on('mouseenter', function() {
-        refreshNavColors();
         if(mobileview == false) {
             $('.home-highlight').stop().animate({left: "0px"}, 400);
         }
         $('.home-title').stop().animate({color: "white"}, 300);
     });
     $('.ni-projects').on('mouseenter', function() {
-        refreshNavColors();
         //$(this).stop().animate({backgroundColor: "#16222A"}, 300);
         if(mobileview == false) {
             $('.proj-highlight').stop().animate({left: "0px"}, 400);
@@ -219,7 +218,6 @@ $(document).ready(function() {
         $('.proj-title').stop().animate({color: "white"}, 300);
     });
     $('.ni-tunes').on('mouseenter', function() {
-        refreshNavColors();
         //$(this).animate({backgroundColor: "#660a00"}, 300);
         if(mobileview == false) {
             $('.tunes-highlight').stop().animate({left: "0px"}, 400);
@@ -227,7 +225,6 @@ $(document).ready(function() {
         $('.tunes-title').stop().animate({color: "white"}, 300);
     });
     $('.ni-contact').on('mouseenter', function() {
-        refreshNavColors();
         //$(this).animate({backgroundColor: "#285016"}, 300);
         if(mobileview == false) {
             $('.contact-highlight').stop().animate({left: "0px"}, 400);
@@ -312,6 +309,7 @@ $(document).ready(function() {
         }
     }
     function checkWidth(w) {
+		$('.pb-tab').css({'width': pbWidth / projectTitles.length});
         width = parseInt(w);
         if(width < 900) {
             mobileview = true;
@@ -387,7 +385,7 @@ $(document).ready(function() {
             } else {
                 pbSelectedTab = 0;
             }
-            $('.pb-view').css("background", "url(/media/pb" + pbSelectedTab + ".png)");
+            $('.pb-view').css({"background": "url(/media/pb" + pbSelectedTab + ".png)"});
             $('.pb-header').text(projectTitles[pbSelectedTab]);
             $('.pb-desc').html(projectDescs[pbSelectedTab]);
             $('.pb-btn-link').attr('href', projectLinks[pbSelectedTab]);
@@ -397,6 +395,7 @@ $(document).ready(function() {
                 $('.pb-btn-word').html("<strong>INFO</strong>");
             }
             $('.pb-tab' + pbSelectedTab).stop().animate({backgroundColor: "#bfbfbf"}, 700);
+			$('.pb-view').css("background-size", "140%");
             $('.pb-fade').fadeIn();
         });
     }
