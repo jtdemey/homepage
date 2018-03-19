@@ -15,25 +15,51 @@
 	</head>
 <body>
 	<div class="survive-content">
-		<div class="mainconsole">
+		<div class="game-viewport">
 			<div class="tickdisplay"></div>
-			<div class="line-area"></div>
-			<div class="cl-area">
-				<input type="text" name="commandline" class="form-control commandline" placeholder=">>" autofocus></input>
+			<div class="mainconsole gameview" id="gameview1">
+				<div class="line-area"></div>
+				<div class="cl-area">
+					<input type="text" name="commandline" class="form-control commandline" placeholder=">>" autofocus></input>
+				</div>
+			</div>
+			<div class="inventory gameview" id="gameview2">
+				<div class="inventory-header">
+					<h4 class="inventory-title">INVENTORY</h4>
+				</div>
+				<div class="inventory-listarea">
+					<ul class="inventory-list">
+					
+					</ul>
+				</div>
+				<div class="crafting-header">
+					<h4 class="crafting-title">CRAFTING</h4>
+				</div>
+				<div class="crafting-listarea">
+					<ul class="crafting-list">
+					
+					</ul>
+				</div>
+			</div>
+			<div class="mapview gameview" id="gameview3">
+				<div class="map-grid"></div>
+			</div>
+			<div class="statusview gameview" id="gameview4">
+				
 			</div>
 		</div>
 	</div>
 	<div class="nav-tabs">
-		<div class="nav-tab home-tab">
+		<div class="nav-tab home-tab" id="nav-tab1">
 			<span class="tab-icon home-icon"><img class="tab-img" src="/survive/tabicon1.svg"></span>
 		</div>
-		<div class="nav-tab inventory-tab">
+		<div class="nav-tab inventory-tab" id="nav-tab2">
 			<span class="tab-icon inventory-icon"><img class="tab-img" src="/survive/tabicon2.svg"></span>
 		</div>
-		<div class="nav-tab crafting-tab">
-			<span class="tab-icon crafting-icon"><img class="tab-img" src="/survive/tabicon3.svg"></span>
+		<div class="nav-tab map-tab" id="nav-tab3">
+			<span class="tab-icon map-icon"><img class="tab-img" src="/survive/tabicon3.svg"></span>
 		</div>
-		<div class="nav-tab status-tab">
+		<div class="nav-tab status-tab" id="nav-tab4">
 			<span class="tab-icon status-icon"><img class="tab-img" src="/survive/tabicon4.svg"></span>
 		</div>
 	</div>
@@ -54,11 +80,20 @@ $(document).ready(function() {
 		-Forest
 			-Constant temp drain
 			-Wabbajack-like predator
+				-Drawn to fire/light
+				-Fast
+				-Telegraphs: howls (far), rustling (medium range), growl (close), roar (adjacent map cell)
 			-Day cycle
 				-Night = increased difficulty
 		-Mansion
 			-Deranged hunter
+				-Stays upstairs in locked room until player enters basement
+				-Slow
+				-Telegraph: heavy footsteps
+				-Wields rifle and hunting machete
+				-Hard to escape; can use traps
 		-Cemetery
+			-Weeping wraith
       -Territorial ghoul
 	-Character
 		-Nameless
@@ -66,20 +101,30 @@ $(document).ready(function() {
 			-Flashlight + some batteries
 			-Lighter
 		    -Can light fires with tinder
+	-Enemies
+		-3 difficulties for day 1, 2, and 3+ (more realistic -> more terrifying)
+		-
 
 */
   //GLOBALS
   var tick = 0;
+  var gameview = 1;
   var gameTime = new Date(1987, 11, 13, 2, 44, 0, 0);
   var displayTime = "Dec 13, 1987 2:44";
+  var gameWidth = $('.survive-content').width();
+  var tabHeight = $('.nav-tabs').height();
   $('.tickdisplay').text(displayTime);
   //DYNAMISM
   $(window).resize(adjustTabs);
+  //LISTENERS
   $('.nav-tab').on('mouseenter', function() {
 	console.log("uh");
     $(this).stop().animate({backgroundColor: "#330000"}, 300);
   }).on('mouseleave', function() {
 	$(this).stop().animate({backgroundColor: "#595959"}, 400);
+  }).on('click', function() {
+	var tid = $(this).attr("id");
+	switchGameview(parseInt(tid.substr(tid.length - 1)));
   });
   //INITIATE
   startClock();
@@ -143,6 +188,19 @@ $(document).ready(function() {
   function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+  
+  function switchGameview(tab) {
+	$('#gameview' + tab).css({"right": "800px"});
+    $('#gameview' + gameview).fadeOut({queue: false, duration: 400}).animate({left: "800px"}, 400, function() {
+	  $('#gameview' + gameview).css({"left": "0px"});
+	  $('#gameview' + tab).fadeIn({queue: false, duration: 400}).animate({right: "800px"});
+	  gameview = tab;
+	});
+	/**$('#gameview' + gameview).fadeOut({queue: false, duration: 400}).animate({left: "100px"}, 400, function() {
+	  gameview = tab;
+	  $('#gameview' + gameview).fadeIn({queue: false, duration: 400}).animate({right: "100px"}, 400);
+	});**/
+  }
 });
 
 function executeCommand(comm) {
@@ -190,7 +248,7 @@ function changeLocale(dir) {
   } catch(err) {
 	appendLineC("!!ERROR: unable to change player locale!!", "red");
   }
-  try {
+  /**try {
     if(Player.locale.exits[CARDINAL_DIRS[dir]] != 0) {
       Player.lastLocale = Player.locale;
       Player.locale = Player.locale.exits[0];
@@ -205,7 +263,7 @@ function changeLocale(dir) {
     }
   } catch(err) {
     appendLineC("!!ERROR: unable to change player locale!!", "red");
-  }
+  }**/
 }
 
 function adjustTabs() {

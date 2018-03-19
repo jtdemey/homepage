@@ -196,7 +196,6 @@ $(document).ready(function() {
     $('.navlist li').on('mouseenter', function() {
 		refreshNavColors();
         if($(this).queue().length > 2) {
-            console.log("eh");
             $('.navlist li, .nav-title').stop().clearQueue();
         }
         if(hlcd != null) {
@@ -206,28 +205,28 @@ $(document).ready(function() {
     });
     $('.ni-home').on('mouseenter', function() {
         if(mobileview == false) {
-            $('.home-highlight').stop().animate({left: "0px"}, 400);
+            $('.home-highlight').stop().animate({left: "0px"}, 300);
         }
         $('.home-title').stop().animate({color: "white"}, 300);
     });
     $('.ni-projects').on('mouseenter', function() {
         //$(this).stop().animate({backgroundColor: "#16222A"}, 300);
         if(mobileview == false) {
-            $('.proj-highlight').stop().animate({left: "0px"}, 400);
+            $('.proj-highlight').stop().animate({left: "0px"}, 300);
         }
         $('.proj-title').stop().animate({color: "white"}, 300);
     });
     $('.ni-tunes').on('mouseenter', function() {
         //$(this).animate({backgroundColor: "#660a00"}, 300);
         if(mobileview == false) {
-            $('.tunes-highlight').stop().animate({left: "0px"}, 400);
+            $('.tunes-highlight').stop().animate({left: "0px"}, 300);
         }
         $('.tunes-title').stop().animate({color: "white"}, 300);
     });
     $('.ni-contact').on('mouseenter', function() {
         //$(this).animate({backgroundColor: "#285016"}, 300);
         if(mobileview == false) {
-            $('.contact-highlight').stop().animate({left: "0px"}, 400);
+            $('.contact-highlight').stop().animate({left: "0px"}, 300);
         }
         $('.contact-title').stop().animate({color: "white"}, 300);
     });
