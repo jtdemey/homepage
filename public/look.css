@@ -148,7 +148,7 @@ footer {
 	padding: 0;
 	overflow: hidden;
 	white-space: nowrap;
-	box-shadow: 1px 0px 5px black;
+  z-index: 2;
 }
 
 .nav-fixed {
@@ -259,7 +259,12 @@ footer {
 }
 
 .proj-content {
+  height: 2500px;
 	background: linear-gradient(to right, #16222A, #3A6073);
+}
+
+.proj-blurb {
+    margin-bottom: 80px;
 }
 
 .proj-icons {
@@ -394,7 +399,6 @@ footer {
 	float: left;
 	background: linear-gradient(to right, #3A6073, #16222A);
 	background-image: url("/media/pb0.png");
-	background-size: 140%;
 }
 
 .pb-bg {
@@ -449,4 +453,69 @@ footer {
 	font-size: 26px;
 	color: black;
 	background-color: white;
+}
+
+/* PROJ WINDOW VIEW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+.proj-window {
+    width: 85%;
+    height: 600px;
+    margin: auto;
+    margin-bottom: 50px;
+    background: linear-gradient(45deg, rgba(64,64,64,0.8), rgba(115,115,115,0.8));
+    border: 2px solid #666666;
+    border-radius: 24px;
+    box-shadow: 15px 15px 60px black;
+}
+
+.tw-window { border: 2px solid #008000; }
+.gs-window { border: 2px solid #004466; }
+.s-window { border: 2px solid #800000; }
+
+.pw-headerarea {
+    height: 100px;
+    border-bottom: 2px solid #666666;
+    text-align: left;
+}
+
+.pw-header {
+    font-family: "Open Sans", sans-serif;
+    font-size: 64px;
+    color: white;
+    padding-top: 10px;
+    padding-left: 20px;
+}
+
+.pw-body {
+    position: relative;
+    height: 478px;
+    text-align: left;
+}
+
+.pw-body p {
+    font-family: "Open Sans", sans-serif;
+    font-size: 30px;
+    color: white;
+    padding-top: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.pw-btn {
+    width: 180px;
+    height: 60px;
+    margin: auto;
+    margin-top: 100px;
+    text-align: center;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+.tw-btn { background-color: #2eb82e; }
+.gs-btn { background-color: #006699; }
+.s-btn { background-color: #990000; }
+
+.pw-btn h4 {
+    font-family: "Open Sans", sans-serif;
+    font-size: 28px;
+    color: white;
 }
