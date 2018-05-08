@@ -4,15 +4,22 @@
 var pathmode = 1;
 //Setup
 console.log("Loading...");
-var express = require('express');
-var site = express();
-var serv = require('http').Server(site);
-var path = require('path');
-var url = require('url');
-var bodyParser = require('body-parser');
+const express = require('express');
+const expressSession = require('express-session');
+const site = express();
+const serv = require('http').Server(site);
+const path = require('path');
+const url = require('url');
+const bodyParser = require('body-parser');
 site.use(bodyParser.urlencoded({ extended: false }));
 site.use(bodyParser.json());
 site.use(express.static(__dirname + '/../public'));
+site.use(expressSession({
+  secret: 'thisisbutatest',
+  cookie: {
+    maxAge: 60000
+  }
+}));
 if(pathmode == 0) {
 	site.use(express.static(path.resolve('D:/Servers/gamesuite/public')));
 } else {
@@ -147,7 +154,7 @@ site.get('/tweetlord/:gameCode', function(req, res) {
 });
 
 site.get('/imposter/:gameCode', function(req, res) {
-    if(req.url == "/imposter/iridium.css") {
+  if(req.url == "/imposter/iridium.css") {
     res.set("Content-Type", "text/css");
     if(pathmode == 0) {
       res.sendFile(path.resolve('/Programs/gamesuite/public/iridium.css'));
@@ -184,31 +191,32 @@ site.get('/pistolwhip', function(req, res) {
 /*******************************************************************************************************************************/
 //Lobby forms
 site.post('/scripts/makeGame', function(req, res) {
-    //Make game
-    var gameTitle = req.body.gameTitle;
+  //Make game
+  var gameTitle = req.body.gameTitle;
 	if(gameTitle == "pistolwhip") {
 		res.writeHead(301, { Location: '/' + gameTitle });
 		res.end();
 		return;
 	}
-    var newGame = startGame(gameTitle);
-        newGame.players[1] = req.body.namepromptM;
-        newGame.playerct += 1;
-        newGame.inProgress = true;
-    GAMELIST[newGame.code] = newGame;
-    //Make player
-    var playerid = Object.keys(PLAYERLIST).length + 1;
-    var player = {
-        id: playerid,
-        slot: 1,
-        name: req.body.namepromptM,
-        gameTitle: req.body.gameTitle,
-        gc: newGame.code
-    }
-    PLAYERLIST[player.id] = player;
-    console.log("Player " + player.id + " created");
-    res.writeHead(301, { Location: '/' + gameTitle + '/' + newGame.code });
-    res.end();
+  var newGame = startGame(gameTitle);
+      newGame.players[1] = req.body.namepromptM;
+      newGame.playerct += 1;
+      newGame.inProgress = true;
+  req.session.gc = newGame.code;
+  GAMELIST[newGame.code] = newGame;
+  //Make player
+  var playerid = Object.keys(PLAYERLIST).length + 1;
+  var player = {
+      id: playerid,
+      slot: 1,
+      name: req.body.namepromptM,
+      gameTitle: req.body.gameTitle,
+      gc: newGame.code
+  }
+  PLAYERLIST[player.id] = player;
+  console.log("Player " + player.id + " created");
+  res.writeHead(301, { Location: '/' + gameTitle + '/' + newGame.code });
+  res.end();
 });
 
 site.post('/scripts/joinGame', function(req, res) {
@@ -267,6 +275,7 @@ site.post('/scripts/joinGame', function(req, res) {
         res.end();
         return;
     }
+    req.session.gc = myGame.code;
     res.writeHead(301, { Location: '/' + gameTitle + '/' + cgc });
     res.end();
 });
@@ -411,7 +420,7 @@ io.sockets.on('connection', function(socket) {
             }
             rvote.agreed.push(data.slot);
             socket.gameState.votes['restart'] = rvote;
-            console.log("Vote for restart called by S" + socket.id + " for " + socket.gameState.code);
+            console.log("###IMPOSTER### Vote for restart called by S" + socket.id + " for " + socket.gameState.code);
             emitToGame('restartVote', socket.gameState.code);
         }
     });
@@ -420,7 +429,7 @@ io.sockets.on('connection', function(socket) {
         if('restart' in socket.gameState.votes && socket.gameState.votes['restart'].agreed.indexOf(socket.player.slot) == -1) {
             socket.gameState.votes['restart'].agree += 1;
             if(socket.gameState.votes.restart.agree >= Math.round(socket.gameState.playerct * .75)) {
-                console.log("[" + socket.gameState.code + "] Restart vote successful, restarting game...");
+                console.log("###IMPOSTER### [" + socket.gameState.code + "] Restart vote successful, restarting game...");
                 socket.gameState.joinable = true;
                 socket.gameState.timers[0] = 60;
                 socket.gameState.timers[1] = 360;
@@ -447,7 +456,7 @@ io.sockets.on('connection', function(socket) {
             }
             rvote.agreed.push(data.slot);
             socket.gameState.votes['replay'] = rvote;
-            console.log("Vote for replay called by S" + socket.id + " for " + socket.gameState.code);
+            console.log("###IMPOSTER### Vote for replay called by S" + socket.id + " for " + socket.gameState.code);
             emitToGame('replayVote', socket.gameState.code);
         }
     });
@@ -456,7 +465,7 @@ io.sockets.on('connection', function(socket) {
         if('replay' in socket.gameState.votes && socket.gameState.votes['replay'].agreed.indexOf(socket.player.slot) == -1) {
             socket.gameState.votes['replay'].agree += 1;
             if(socket.gameState.votes.replay.agree >= Math.round(socket.gameState.playerct * .75)) {
-                console.log("[" + socket.gameState.code + "] Replay vote successful, resetting scenarios...");
+                console.log("###IMPOSTER### [" + socket.gameState.code + "] Replay vote successful, resetting scenarios...");
                 socket.gameState.timers[0] = 60;
                 socket.gameState.timers[1] = 360;
                 socket.gameState.phase = 1;
@@ -541,6 +550,12 @@ function startClock() {
 /*******************************************************************************************************************************/
 //Utility functions
 function emitToGame(event, gc) {
+    if(Object.keys(GAMELIST).length == 0) {
+      console.log("No games in progress, going idle...");
+      idle = true;
+      clearInterval(tick);
+      idlePoll();
+    }
     var found = false;
     for(var s in SOCKETLIST) {
         var socket = SOCKETLIST[s];
@@ -557,6 +572,12 @@ function emitToGame(event, gc) {
 }
 
 function emitToGameC(event, gc, data) {
+    if(Object.keys(GAMELIST).length == 0) {
+      console.log("No games in progress, going idle...");
+      idle = true;
+      clearInterval(tick);
+      idlePoll();
+    }
     var found = false;
     for(var s in SOCKETLIST) {
         var socket = SOCKETLIST[s];
@@ -630,6 +651,16 @@ function restartApp() {
     exec(sExecute, function () {
         console.log('APPLICATION RESTARTED');
     });
+}
+
+function generateSessionID() {
+  var sesschars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+  var sessid = '';
+  for(var i = 0; i < 32; i++) {
+    var rc = sesschars.charAt(Math.floor(Math.random() * 62));
+    sessid = sessid + rc;
+  }
+  return sessid;
 }
 /*******************************************************************************************************************************/
 /******************************************************************************************************/
