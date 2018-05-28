@@ -126,5 +126,20 @@ const CARDINAL_DIRS = {
   "O": 11
 }
 
+const CARDINAL_FULL = {
+	0: "NORTH",
+	1: "SOUTH",
+	2: "EAST",
+	3: "WEST",
+	4: "NORTHEAST",
+	5: "NORTHWEST",
+	6: "SOUTHEAST",
+	7: "SOUTHWEST",
+	8: "UP",
+	9: "DOWN",
+	10: "IN",
+	11: "OUT"
+}
+
 var localeList = [gameMap.loc_car, gameMap.loc_mailbox];
 Player.locale = gameMap.loc_car;
