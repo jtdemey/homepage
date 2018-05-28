@@ -458,7 +458,6 @@ footer {
 /* PROJ WINDOW VIEW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 .proj-window {
     width: 85%;
-    height: 600px;
     margin: auto;
     margin-bottom: 50px;
     background: linear-gradient(45deg, rgba(64,64,64,0.8), rgba(115,115,115,0.8));
@@ -487,7 +486,6 @@ footer {
 
 .pw-body {
     position: relative;
-    height: 478px;
     text-align: left;
 }
 
@@ -505,6 +503,7 @@ footer {
     height: 60px;
     margin: auto;
     margin-top: 100px;
+	margin-bottom: 40px;
     text-align: center;
     border: 1px solid white;
     border-radius: 10px;
