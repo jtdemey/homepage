@@ -1,33 +1,49 @@
 /* _/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_ */
 /******************************************************************************************************/
 //0: desktop, 1: laptop
-var pathmode = 1;
+var pathmode = 0;
 //Setup
 console.log("Loading...");
 const express = require('express');
-const expressSession = require('express-session');
+//const expressSession = require('express-session');
 const site = express();
 const serv = require('http').Server(site);
 const path = require('path');
 const url = require('url');
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
+const fs = require('fs');
 site.use(bodyParser.urlencoded({ extended: false }));
 site.use(bodyParser.json());
 site.use(express.static(__dirname + '/../public'));
-site.use(expressSession({
+var mailkey = 'none';
+var transporter;
+//Email protocols
+fs.readFile('D:/Misc/verify.txt', 'utf8', function(err, data) {
+  if(err) {
+    console.log('!!! Error in retrieving email info. Email services are unavailable. !!!');
+  }
+  mailkey = data;
+});
+setTimeout(function() {
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'thesoapypenguin@gmail.com',
+      pass: mailkey
+    }
+  });
+  console.log("Email services operational.");
+}, 4000);
+/**site.use(expressSession({
   secret: 'thisisbutatest',
   cookie: {
     maxAge: 60000
   }
-}));
-/**
-if(pathmode == 0) {
-	site.use(express.static(path.resolve('D:/Servers/gamesuite/public')));
-} else {
-	site.use(express.static(path.resolve('/home/hydra/Apps/gamesuite/public')));
-}
-**/
+}));**/
 var idle = 1;
+var tick = undefined;
+const PORT_NUM = 5260;
 /******************************************************************************************************/
 //Root page
 site.get('/', function(req, res) {
@@ -204,7 +220,7 @@ site.post('/scripts/makeGame', function(req, res) {
       newGame.players[1] = req.body.namepromptM;
       newGame.playerct += 1;
       newGame.inProgress = true;
-  req.session.gc = newGame.code;
+  //req.session.gc = newGame.code;
   GAMELIST[newGame.code] = newGame;
   //Make player
   var playerid = Object.keys(PLAYERLIST).length + 1;
@@ -277,7 +293,7 @@ site.post('/scripts/joinGame', function(req, res) {
         res.end();
         return;
     }
-    req.session.gc = myGame.code;
+    //req.session.gc = myGame.code;
     res.writeHead(301, { Location: '/' + gameTitle + '/' + cgc });
     res.end();
 });
@@ -286,12 +302,33 @@ site.post('/scripts/joinGame', function(req, res) {
 site.post('/scripts/contact', function(req, res) {
     var name = req.body.contactName;
     var text = req.body.contactText;
-    
+    var mail = {
+      from: 'thesoapypenguin@gmail.com',
+      to: 'johntdemey@live.com',
+      subject: ('SITE CONTACT REQUEST: ' + name),
+      html: ('New request received from ' + name + '     Request: ' + text)
+    }
+    if(transporter == 'none') {
+      console.log('New request received, but email services are unavailable.')
+      console.log('NAME: ' + name);
+      console.log('REQUEST: ' + text);
+    } else {
+      transporter.sendMail(mail, function(error, info) {
+        if(error) {
+          console.log('!!! Error in sending request email !!!');
+          console.log(mail);
+        } else {
+          console.log('Request email deployed: ' + info.response);
+        }
+      });
+    }
+    res.render('form', {req: req.body});
+    res.end();
 });
 /*******************************************************************************************************************************/
 //Sockets
-var io = require('socket.io')(serv);
-io.sockets.on('connection', function(socket) {
+const io = require('socket.io')(serv);
+io.on('connection', function(socket) {
     //Connection
     var slen = Object.keys(SOCKETLIST).length;
     socket.id = slen + 1;
@@ -483,6 +520,7 @@ io.sockets.on('connection', function(socket) {
     });
     //----------------------------------------------------------------
 });
+io.listen(serv);
 /******************************************************************************************************************************/
 //Clock
 function idlePoll() {
@@ -498,7 +536,7 @@ function idlePoll() {
 }
 idlePoll();
 function startClock() {
-    var tick = setInterval(function() {
+    tick = setInterval(function() {
         if(Object.keys(GAMELIST).length == 0) {
             console.log("No games in progress, going idle...");
             idle = true;
@@ -555,7 +593,9 @@ function emitToGame(event, gc) {
     if(Object.keys(GAMELIST).length == 0) {
       console.log("No games in progress, going idle...");
       idle = true;
-      clearInterval(tick);
+	  if(tick) {
+		clearInterval(tick);
+	  }
       idlePoll();
     }
     var found = false;
@@ -666,7 +706,7 @@ function generateSessionID() {
 }
 /*******************************************************************************************************************************/
 /******************************************************************************************************/
-serv.listen(4242, function() {
+serv.listen(PORT_NUM, function() {
 	console.log("      ,',                                   ,',");
 	console.log("     ', ,'                                 ', ,'");
 	console.log("   ,----'--------------------------.     ,----'--------------------------.");

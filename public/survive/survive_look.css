@@ -1,3 +1,4 @@
+/* General */
 * {
 	font-family: "Arial";
 	padding: 0;
@@ -21,8 +22,16 @@ h1 {
 	font-family: "Abel", sans-serif;
 }
 
+h4 {
+	font-size: 200%;
+}
+
+h5, h6 {
+	padding: 0;
+}
+
 html, body, .container-fluid {
-	background: #999999;
+	background-color: #999999;
 	margin: 0;
 	padding: 0;
 	height: 100%;
@@ -35,12 +44,37 @@ html, body, .container-fluid {
 	margin: auto;
 }
 
+.tickdisplay {
+  position: absolute;
+	background-color: #d9d9d9;
+}
+
+.game-viewport {
+	width: 100%;
+	height: 80%;
+}
+
+.gameview {
+	display: none;
+	width: 100%;
+	height: 100%;
+	background: #d9d9d9;
+}
+
+/* Console (GameView 1) */
 .mainconsole {
 	width: inherit;
-	height: inherit;
+	height: 100%;
 	margin: auto;
 	overflow: hidden;
 	background: #d9d9d9;
+}
+
+.console-grid {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-columns: 3fr 1fr;
 }
 
 .line-area {
@@ -50,11 +84,23 @@ html, body, .container-fluid {
 	overflow: hidden;
 }
 
+.console-info {
+	background-image: url("/media/info-forest.png");
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+.console-exits {
+	width: 100%;
+	height: 100%;
+	list-style-type: none;
+}
+
 .cl-area {
-	position: absolute;
+	position: relative;
 	bottom: 0px;
 	width: 100%;
-	height: 4em;
+	height: 35px;
 	margin: auto;
 }
 
@@ -62,4 +108,106 @@ html, body, .container-fluid {
 	width: 12em;
 	height: inherit;
 	margin: auto;
+}
+
+.linebox {
+	position: absolute;
+	bottom: 170px;
+	width: 75%;
+	height: 30px;
+}
+
+.line {
+	left: 16px;
+	bottom: -25px;
+	position: absolute;
+	font-family: "Titillium Web";
+	font-size: 1.1em;
+}
+
+.console-stats {
+	width: 100%;
+	height: 30%;
+	margin: 0;
+	padding-top: 65px;
+	padding-bottom: 20px;
+	list-style-type: none;
+}
+
+.console-stats li {
+	width: 80px;
+	margin: auto;
+	margin-bottom: 7px;
+}
+
+.stat-icon {
+	width: 25px;
+	height: 25px;
+	margin-left: 20px;
+}
+
+.console-exits {
+	width: 100%;
+	height: 70%;
+	margin: 0;
+	list-style-type: none;
+	padding-top: 16px;
+}
+
+.console-exit-dir {
+	margin-left: 8px;
+}
+
+.console-exit-name {
+	margin-left: 20px;
+}
+
+/* Inventory (GameView 2) */
+.igv-title {
+	margin: 0;
+	padding-top: 16px;
+  padding-left: 10px;
+}
+
+.locale-title {
+  padding-top: 26px;
+}
+
+/* Map (GameView 3) */
+
+/* Info (GameView 4) */
+
+/* Navigation Tabs */
+.nav-tabs {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-column-gap: 1px;
+	width: 100%;
+	height: 20%;
+	background-color: #4d4d4d;
+}
+
+.nav-tab {
+	display: flex;
+  position: relative;
+	align-items: center;
+	width: 100%;
+	height: 20%;
+	background-color: #595959;
+	cursor: pointer;
+}
+
+.nav-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.tab-icon {
+	margin: auto;
+}
+
+.tab-img {
+	width: 80px;
+	height: 80px;
 }
