@@ -1,4 +1,27 @@
 <!DOCTYPE HTML>
+<!--
+ ____________________
+/                    \
+!      |_| o         !
+!      | | |  o      !
+!                    !
+\____________________/
+         !  !
+         !  !
+         L_ !
+        / _)!
+       / /__L
+ _____/ (____)
+        (____)
+ _____  (____)
+      \_(____)
+         !  !
+         !  !
+         \__/ 
+         
+    Don't steal my stuff please.
+    Business inquiries: johntdemey@live.com
+-->
 <html lang="en">
 	<head>
 		<title>Survive</title>
@@ -80,15 +103,19 @@
 		</div>
 		<div class="nav-tabs">
 			<div class="nav-tab home-tab" id="nav-tab1">
+        <span class="badge nav-badge nav-badge1 home-badge"></span>
 				<span class="tab-icon home-icon"><img class="tab-img" src="/survive/tabicon1.svg"></span>
 			</div>
 			<div class="nav-tab inventory-tab" id="nav-tab2">
+        <span class="badge nav-badge nav-badge2 inv-badge"></span>
 				<span class="tab-icon inventory-icon"><img class="tab-img" src="/survive/tabicon2.svg"></span>
 			</div>
 			<div class="nav-tab map-tab" id="nav-tab3">
+        <span class="badge nav-badge nav-badge3 map-badge"></span>
 				<span class="tab-icon map-icon"><img class="tab-img" src="/survive/tabicon5.svg"></span>
 			</div>
 			<div class="nav-tab status-tab" id="nav-tab4">
+        <span class="badge nav-badge nav-badge4 status-badge"></span>
 				<span class="tab-icon status-icon"><img class="tab-img" src="/survive/tabicon4.svg"></span>
 			</div>
 		</div>
@@ -135,13 +162,23 @@ $(document).ready(function() {
 	-Enemies
 		-3 difficulties for day 1, 2, and 3+ (more realistic -> more terrifying)
 		-Woods
-      -Difficulty 1: wolf, owl, dog, wolverine, husk, blue slime, green slime, giant rat
-      -Difficulty 2: cougar, mangy bear, zombie, ghoul, red slime, purple slime, hag,
+      -Difficulty 1: wolf, owl, dog, snake, wolverine, husk, blue slime, green slime, giant rat, badger
+      -Difficulty 2: cougar, mangy bear, zombie, ghoul, red slime, purple slime, hag
+      -Difficulty 3: chupacabra, grizzly bear, dire wolf, werewolf
     -Mansion
+      -Difficulty 1: giant rat, snake, owl, badger
+      -Difficulty 2: bandit, addict, roamer, hound
+      -Difficulty 3: ghoul, hell-hound, rogue, spectre, abomination
     -Cemetery
-      -Difficulty 1: ghost, ghoul
-      -Difficulty 2: spectre, wraith, zombie
-
+      -Difficulty 1: ghost, ghoul, husk, owl, lost soul
+      -Difficulty 2: spectre, wraith, zombie, lesser demon, vampire
+      -Difficulty 3: greater demon, abomination, tormented soul, chupacabra, werewolf
+  -Items
+    -Handwarmers: +10 temperature
+    -Tinder: randomly-spawned in woods, can be used for fires
+      -Fires produce warmth and reveal extra items but attract the Hulking Horror
+    -Flashlight: reveals items and examinables, depletes batteries
+    -Batteries: Lasts for certain amount of ticks
 */
   //GLOBALS
   var tick = 0;
@@ -153,6 +190,7 @@ $(document).ready(function() {
   $('.tickdisplay').text(displayTime);
   $('.mainconsole').show();
   $('.linebox').css({"width": ((gameWidth / 4 * 3) + "px")});
+  $('.nav-badge').css('backgroundColor', '#990000');
   //DYNAMISM
   $(window).resize(adjustTabs);
   //LISTENERS
@@ -175,6 +213,15 @@ $(document).ready(function() {
       rawinput = rawinput.trim();
       $('.commandline').val('');
       var commcode = Parser.parse(rawinput);
+    }
+  });
+  document.addEventListener('addConsoleNotify', function() {
+    if(gameview != 1) {
+      if($('.home-badge').text() == '') {
+        $('.home-badge').text('1');
+      } else {
+        $('.home-badge').text(parseInt($('.home-badge').text()) + 1);
+      }
     }
   });
   //GAME
@@ -226,24 +273,58 @@ $(document).ready(function() {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
   function switchGameview(tab) {
-	$('#gameview' + tab).css({"right": "800px"});
-  $('#gameview' + gameview).fadeOut({queue: false, duration: 150}).animate({left: "800px"}, 100, function() {
-	  $('#gameview' + gameview).css({"left": "0px"});
-	  $('#gameview' + tab).fadeIn({queue: false, duration: 150}).animate({right: "800px"});
-	  gameview = tab;
-	});
-	/**$('#gameview' + gameview).fadeOut({queue: false, duration: 400}).animate({left: "100px"}, 400, function() {
-	  gameview = tab;
-	  $('#gameview' + gameview).fadeIn({queue: false, duration: 400}).animate({right: "100px"}, 400);
-	});**/
+    if(gameview == tab) { return; }
+    $('#gameview' + tab).css({"right": "800px"});
+    if($('.nav-badge' + tab).text() != '') {
+      $('.nav-badge' + tab).text('');
+    }
+    $('#gameview' + gameview).fadeOut({queue: false, duration: 150}).animate({left: "800px"}, 100, function() {
+      $('#gameview' + gameview).css({"left": "0px"});
+      $('#gameview' + tab).fadeIn({queue: false, duration: 150}).animate({right: "800px"});
+      gameview = tab;
+    });
+    /**$('#gameview' + gameview).fadeOut({queue: false, duration: 400}).animate({left: "100px"}, 400, function() {
+      gameview = tab;
+      $('#gameview' + gameview).fadeIn({queue: false, duration: 400}).animate({right: "100px"}, 400);
+    });**/
   }
 });
+function adjustTabs() {
+  var fw = $('.nav-tabs').width();
+  var fh = $('.nav-tabs').height();
+  $('.nav-tab').css({"width": ((fw / 4 - 3) + "px"), "height": (fh + "px")});
+  //$('.tab-img').css({"margin-top": ((fh / 2 - 50) + "px")});
+}
+function changeLocale(dir) {
+  console.log(dir);
+  if(Player.locale.exits[dir] != 0) {
+    if(Player.locale.exitPhrases[dir] != 0) {
+      appendLine(Player.locale.exitPhrases[dir]);
+      setTimeout(function() { localeSwitch(dir); }, 1500);
+    } else {
+      localeSwitch(dir);
+    }
+  } else {
+    appendLineR(["You can't go that way.", "There's nothing in that direction.", "There's something in the way."]);
+  }
+}
 function executeCommand(comm) {
   switch(comm[0]) {
     case "GO":
       var dir = comm[1];
       changeLocale(dir);
+      break;
+    case "EXAMINE":
+      break;
   }
+}
+function localeSwitch(dir) {
+  Player.lastLocale = Player.locale;
+  Player.locale = gameMap[Player.locale.exits[dir]];
+  Player.locale.visits += 1;
+  appendLine(Player.locale.enterPhrase);
+  refreshConsoleExits();
+  $('.locale-title').text(Player.locale.display.toUpperCase());
 }
 function openingRoll(tick) {
   if(tick == 2) { appendLine("A dirt backroad."); }
@@ -256,38 +337,10 @@ function openingRoll(tick) {
     $('.tickdisplay').fadeIn({queue: false, duration: "slow"}).animate({fontSize: "1em"}, 1000);
   }
 }
-function changeLocale(dir) {
-  console.log(dir);
-  try {
-    for(var i = 0; i < Player.locale.exits.length; i++) {
-      if(Player.locale.exits[i].dir == CARDINAL_DIRS[dir]) {
-        Player.lastLocale = Player.locale;
-        Player.locale = gameMap[Player.locale.exits[i].destination];
-        Player.locale.visits += 1;
-        appendLine(Player.locale.enterPhrase);
-        return;
-      }
-    }
-    appendLineR(["You can't go that way.", "There's nothing in that direction.", "There's something in the way."]);
-  } catch(err) {
-    appendLineC("!!ERROR: unable to change player locale!!", "red");
-  }
-  /**try {
-    if(Player.locale.exits[CARDINAL_DIRS[dir]] != 0) {
-      Player.lastLocale = Player.locale;
-      Player.locale = Player.locale.exits[0];
-      Player.locale.visits += 1;
-      appendLine(Player.locale.enterPhrase);
-    } else {
-      if(Player.locale.exitPhrases[CARDINAL_DIRS[dir]] != 0) {
-        appendLine(Player.locale.exitPhrases[CARDINAL_DIRS[dir]]);
-      } else {
-       appendLineR(["You can't go that way.", "There's nothing in that direction."]);
-      }
-    }
-  } catch(err) {
-    appendLineC("!!ERROR: unable to change player locale!!", "red");
-  }**/
+function refreshConsoleStats() {
+  $('.hp-amt').text(Player.health);
+  $('.temp-amt').text(Player.temperature);
+  $('.sanity-amt').text(Player.sanity);
 }
 function refreshConsoleExits() {
 	$('.console-exits li').remove();
@@ -299,11 +352,5 @@ function refreshConsoleExits() {
 			$('.console-exits').append(nameElement).append(exitLocale);
 		}
 	}
-}
-function adjustTabs() {
-  var fw = $('.nav-tabs').width();
-  var fh = $('.nav-tabs').height();
-  $('.nav-tab').css({"width": ((fw / 4 - 3) + "px"), "height": (fh + "px")});
-  //$('.tab-img').css({"margin-top": ((fh / 2 - 50) + "px")});
 }
 </script>

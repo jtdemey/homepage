@@ -264,7 +264,7 @@ footer {
 }
 
 .proj-blurb {
-    margin-bottom: 80px;
+  margin-bottom: 80px;
 }
 
 .proj-icons {
@@ -321,6 +321,43 @@ footer {
 	color: white;
 }
 
+/* TUNE PLAYER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+.tune-player {
+  width: 75%;
+  height: 400px;
+  background: linear-gradient(45deg, rgba(64,64,64,0.8), rgba(115,115,115,0.8));
+  border: 2px solid #666666;
+  border-radius: 16px;
+  box-shadow: 15px 15px 60px black;
+  margin: auto;
+  margin-top: 60px;
+}
+
+.tune-list {
+  width: 100%;
+  height: 100%;
+  list-style-type: none;
+  text-align: left;
+}
+
+.tune-list li {
+  padding: 10px 0px 10px 20px;
+  color: white;
+  border-bottom: 1px solid #666666;
+  cursor: pointer;
+}
+
+.tune1 {
+  border-radius: 16px 16px 0px 0px;
+}
+
+.playbtn {
+  width: 42px;
+  height: 42px;
+  padding-right: 10px;
+}
+
+/* CONTACT FORM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 #contact-form {
 	width: 75%;
 	height: 55px;
@@ -348,7 +385,70 @@ footer {
 	left: 0;
 }
 
-/* JS BROWSER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* PROJ WINDOW VIEW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+.proj-window {
+    width: 85%;
+    margin: auto;
+    margin-bottom: 50px;
+    background: linear-gradient(45deg, rgba(64,64,64,0.8), rgba(115,115,115,0.8));
+    border: 2px solid #666666;
+    border-radius: 24px;
+    box-shadow: 15px 15px 60px black;
+}
+
+.tw-window { border: 2px solid #008000; }
+.gs-window { border: 2px solid #004466; }
+.s-window { border: 2px solid #800000; }
+
+.pw-headerarea {
+    height: 100px;
+    border-bottom: 2px solid #666666;
+    text-align: left;
+}
+
+.pw-header {
+    font-family: "Open Sans", sans-serif;
+    font-size: 64px;
+    color: white;
+    padding-top: 10px;
+    padding-left: 20px;
+}
+
+.pw-body {
+    position: relative;
+    text-align: left;
+}
+
+.pw-body p {
+    font-family: "Open Sans", sans-serif;
+    font-size: 30px;
+    color: white;
+    padding-top: 60px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.pw-btn {
+    width: 180px;
+    height: 60px;
+    margin: auto;
+    margin-top: 100px;
+	margin-bottom: 40px;
+    text-align: center;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+.tw-btn { background-color: #2eb82e; }
+.gs-btn { background-color: #006699; }
+.s-btn { background-color: #990000; }
+
+.pw-btn h4 {
+    font-family: "Open Sans", sans-serif;
+    font-size: 28px;
+    color: white;
+}
+/* JS BROWSER (deprecated) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .proj-browser {
 	width: 90%;
 	height: 500px;
@@ -454,67 +554,4 @@ footer {
 	color: black;
 	background-color: white;
 }
-
-/* PROJ WINDOW VIEW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-.proj-window {
-    width: 85%;
-    margin: auto;
-    margin-bottom: 50px;
-    background: linear-gradient(45deg, rgba(64,64,64,0.8), rgba(115,115,115,0.8));
-    border: 2px solid #666666;
-    border-radius: 24px;
-    box-shadow: 15px 15px 60px black;
-}
-
-.tw-window { border: 2px solid #008000; }
-.gs-window { border: 2px solid #004466; }
-.s-window { border: 2px solid #800000; }
-
-.pw-headerarea {
-    height: 100px;
-    border-bottom: 2px solid #666666;
-    text-align: left;
-}
-
-.pw-header {
-    font-family: "Open Sans", sans-serif;
-    font-size: 64px;
-    color: white;
-    padding-top: 10px;
-    padding-left: 20px;
-}
-
-.pw-body {
-    position: relative;
-    text-align: left;
-}
-
-.pw-body p {
-    font-family: "Open Sans", sans-serif;
-    font-size: 30px;
-    color: white;
-    padding-top: 60px;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-.pw-btn {
-    width: 180px;
-    height: 60px;
-    margin: auto;
-    margin-top: 100px;
-	margin-bottom: 40px;
-    text-align: center;
-    border: 1px solid white;
-    border-radius: 10px;
-}
-
-.tw-btn { background-color: #2eb82e; }
-.gs-btn { background-color: #006699; }
-.s-btn { background-color: #990000; }
-
-.pw-btn h4 {
-    font-family: "Open Sans", sans-serif;
-    font-size: 28px;
-    color: white;
-}
+*/
