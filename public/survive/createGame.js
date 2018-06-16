@@ -71,31 +71,31 @@ function addLocale(n, d, e, ep, t, v, en, c) {
   gameMap[locale.name] = locale;
 }
 
-function addItem(n, l, pc, st, ef, use) {
+function addItem(n, am, l, pc, st, d, ef, use) {
   var item = {
     name: n,
-    pcchance: pc,
+    count: am,
+    chance: pc,
     stackable: st,
+    equipped: false,
+    desc: d,
     effect: ef,
     onUse: use
   };
-  gameMap.l.items.push(item);
-}
-
-function addItems(n, l, pc, st, ef, use, am) {
-  var item = {
-    name: n,
-    pcchance: pc,
-    stackable: st,
-    effect: ef,
-    onUse: use
-  };
-  for(var i = 0; i < am; i++) {
-    gameMap.l.items.push(item);
-  }
+  gameMap[l].items.push(item);
 }
 
 //function addEnemy(h, )
+
+function useHandwarmers() {
+  if(Player.temperature < 120) {
+    Player.temperature += 10;
+    appendLine("The handwarmers help fight the cold.");
+  } else {
+    appendLine("No need for those now.");
+  }
+  consumeItemByName('Handwarmers', 1);
+}
 
 addLocale("loc_car", "Car",
   [0,0,0,0,0,0,0,0,0,0,0,"loc_mailbox"],
@@ -104,6 +104,8 @@ addLocale("loc_car", "Car",
   "You sit in the driver's seat.",
   ["A gust of wind rushes against the windshield.", "It's lightly snowing outside.", "Everything is still and quiet."]
 );
+addItem("Handwarmers", 2, "loc_car", 1, true, 'Small packets that emit heat for a few minutes - a meager relief from the cold.',
+  undefined, function() { useHandwarmers(); });
 addLocale("loc_mailbox", "Mailbox",
   ["loc_shedpath",0,0,0,0,0,0,0,0,0,"loc_car",0],
   ["You head down the driveway toward the mansion.",0,0,0,0,0,0,0,0,0,"You open the driver side door of your car.",0],
@@ -123,7 +125,8 @@ addLocale("loc_shed", "Shed",
   [0,0,0,"loc_shedpath",0,0,0,0,0,0,0,0],
   [0,0,0,"The shoddy shed door swings open.",0,0,0,0,0,0,0,0],
   "normal", "normal",
-  "You step inside the cold, dark shed "
+  "You step inside the modest tool shed.",
+  ["The shoddy wooden walls aren't very good at keeping the cold out.", "The floor is merely heavily-trampled dirt.", "The gentle wind whistles through the cracks in the walls."]
 );
 addLocale("loc_frontyd", "Front Yard",
   [0,0,0,0,0,0,0,0],

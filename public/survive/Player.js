@@ -20,6 +20,8 @@ var Player = {
   locale: undefined,
   lastLocale: undefined,
   visited: new Array(),
+  items: [],
+  equipped: [],
   onTick: function(tick) {
     //Temp check
     if(tick % 5 == 0) {
@@ -27,31 +29,14 @@ var Player = {
         case "hot":
           if(this.temperature < 150) {
             this.temperature = this.temperature + 3;
-          }
-          if(this.temperature > 149) {
+          } else {
             if(this.isHeatExhausted == false) {
               this.isHeatExhausted = true;
               appendLineC("You are heat exhausted.","#ff3300");
             }
           }
-          if(this.isFreezing == true) {
-            this.temperature = this.temperature + 10;
-            if(this.temperature > 9) {
-              this.isFreezing = false;
-              this.coldWarns[0] = false;
-              this.coldWarns[1] = false;
-              this.coldWarns[2] = false;
-              appendLineC("The warmth brings relief.", "#ff6600");
-            }
-          }
-          if(this.isShivering == true) {
-            if(this.temperature < 25) {
-              this.temperature = this.temperature + 5;
-            } else if(this.temperature > 24) {
-              this.isShivering = false;
-              appendLineRC(["You are no longer shivering.", "Your body steadies."], "#cc5200");
-            }
-          }
+          unfreezeCheck();
+          unshiverCheck();
           break;
         case "warm":
           if(this.temperature < 120) {
@@ -59,52 +44,13 @@ var Player = {
           } else if(this.temperature > 125) {
             this.temperature = this.temperature - 1;
           }
-          if(this.isFreezing == true) {
-            this.temperature = this.temperature + 8;
-            if(this.temperature > 9) {
-              this.isFreezing = false;
-              this.coldWarns[0] = false;
-              this.coldWarns[1] = false;
-              this.coldWarns[2] = false;
-              appendLineC("The warmth brings relief.", "#ff6600");
-            }
-          }
-          if(this.isShivering == true) {
-            if(this.temperature < 25) {
-              this.temperature = this.temperature + 3;
-            } else if(this.temperature > 24) {
-              this.isShivering = false;
-              appendLineRC(["You are no longer shivering.", "Your body steadies."], "#cc5200");
-            }
-          }
+          unfreezeCheck();
+          unshiverCheck();
           break;
         case "normal":
-          if(this.isHeatExhausted == true) {
-            if(this.temperature > 125) {
-              this.temperature = this.temperature - 3;
-            } else if(this.temperature < 125) {
-              this.isHeatExhausted = false;
-              appendLineC("You have cooled down - feeling much better now.","#3399ff");
-            }
-          }
-          if(this.isFreezing == true) {
-            this.temperature = this.temperature + 5;
-            if(this.temperature > 9) {
-              this.isFreezing = false;
-              this.coldWarns[0] = false;
-              this.coldWarns[1] = false;
-              this.coldWarns[2] = false;
-              appendLineC("The warmth brings relief.", "#ff6600");
-            }
-          }
-          if(this.isShivering == true) {
-            if(this.temperature < 25) {
-              this.temperature = this.temperature + 1;
-            } else if(this.temperature > 24) {
-              this.isShivering = false;
-              appendLineRC(["You are no longer shivering.", "Your body steadies."], "#cc5200");
-            }
-          }
+          unheatCheck();
+          unfreezeCheck();
+          unshiverCheck();
           if(this.temperature < 95) {
             this.temperature = this.temperature + 1;
           } else if(this.temperature > 120) {
@@ -114,27 +60,13 @@ var Player = {
           }
           break;
         case "cold":
-          if(this.isHeatExhausted == true) {
-            if(this.temperature > 125) {
-              this.temperature = this.temperature - 4;
-            } else if(this.temperature < 125) {
-              this.isHeatExhausted = false;
-              appendLineC("You have cooled down - feeling much better now.","#3399ff");
-            }
-          }
+          unheatCheck();
           if(this.temperature > 50) {
             this.temperature = this.temperature - 1;
           }
           break;
         case "very cold":
-          if(this.isHeatExhausted == true) {
-            if(this.temperature > 125) {
-              this.temperature = this.temperature - 6;
-            } else if(this.temperature < 125) {
-              this.isHeatExhausted = false;
-              appendLineC("You have cooled down - feeling much better now.","#3399ff");
-            }
-          }
+          unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 2;
           }
@@ -150,14 +82,7 @@ var Player = {
           }
           break;
         case "freezing":
-          if(this.isHeatExhausted == true) {
-            if(this.temperature > 125) {
-              this.temperature = this.temperature - 8;
-            } else if(this.temperature < 125) {
-              this.isHeatExhausted = false;
-              appendLineC("You have cooled down - feeling much better now.", "#3399ff");
-            }
-          }
+          unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 3;
           }
@@ -174,14 +99,7 @@ var Player = {
           }
           break;
         case "frigid":
-          if(this.isHeatExhausted == true) {
-            if(this.temperature > 125) {
-              this.temperature = this.temperature - 7;
-            } else if(this.temperature < 125) {
-              this.isHeatExhausted = false;
-              appendLineC("You have cooled down - feeling much better now.","#3399ff");
-            }
-          }
+          unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 4;
           }
@@ -198,14 +116,7 @@ var Player = {
           }
           break;
         case "glacial":
-          if(this.isHeatExhausted == true) {
-            if(this.temperature > 125) {
-              this.temperature = this.temperature - 10;
-            } else if(this.temperature < 125) {
-              this.isHeatExhausted = false;
-              appendLineC("You have cooled down - feeling much better now.","#3399ff");
-            }
-          }
+          unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 5;
           }
@@ -288,3 +199,38 @@ var Player = {
   },
   coldWarns: [false, false, false]
 };
+
+function unfreezeCheck() {
+  if(Player.isFreezing == true) {
+    Player.temperature = v.temperature + 8;
+    if(Player.temperature > 9) {
+      Player.isFreezing = false;
+      Player.coldWarns[0] = false;
+      Player.coldWarns[1] = false;
+      Player.coldWarns[2] = false;
+      appendLineC("The warmth brings relief.", "#ff6600");
+    }
+  }
+}
+
+function unshiverCheck() {
+  if(Player.isShivering == true) {
+    if(Player.temperature < 25) {
+      Player.temperature = Player.temperature + 5;
+    } else if(Player.temperature > 24) {
+      Player.isShivering = false;
+      appendLineRC(["You are no longer shivering.", "Your body steadies."], "#cc5200");
+    }
+  }
+}
+
+function unheatCheck() {
+  if(Player.isHeatExhausted == true) {
+    if(Player.temperature > 125) {
+      Player.temperature = Player.temperature - 7;
+    } else if(Player.temperature < 125) {
+      Player.isHeatExhausted = false;
+      appendLineC("You have cooled down - feeling much better now.","#3399ff");
+    }
+  }
+}
