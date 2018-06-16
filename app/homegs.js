@@ -83,6 +83,10 @@ site.get('/survive', function(req, res) {
 		}
 	}
 });
+
+site.get('/roleroller', function(req, res) {
+  res.sendFile(path.resolve('D:/Servers/homepage/public/roleroller.html'));
+});
 /* _/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_ */
 /*******************************************************************************************************************************/
 //Game constructor

@@ -37,6 +37,28 @@
 		<script src="//cdn.jsdelivr.net/jquery.color-animation/1/mainfile"></script>
 	</head>
 <body>
+  <div class="info-modal-bg modal-bg">
+    <div class="info-modal">
+      <div class="modal-stuff">
+        <p class="modal-text"></p>
+      </div>
+      <div class="info-modal-btns modal-btns">
+        <div class="modal-btn info-modal-btn" id="modal-btn1"><div class="modal-btn-text">Yes</div></div>
+        <div class="modal-btn info-modal-btn" id="modal-btn2"><div class="modal-btn-text">No</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="combat-modal-bg modal-bg">
+    <div class="combat-modal">
+      <div class="modal-stuff">
+        <p class="modal-text"></p>
+      </div>
+      <div class="combat-modal-btns modal-btns">
+        <div class="modal-btn"><div class="modal-btn-text">Yes</div></div>
+        <div class="modal-btn"><div class="modal-btn-text">No</div></div>
+      </div>
+    </div>
+  </div>
 	<div class="survive-content">
 		<div class="game-viewport">
 			<div class="tickdisplay"></div>
@@ -164,7 +186,7 @@ $(document).ready(function() {
 		-Woods
       -Difficulty 1: wolf, owl, dog, snake, wolverine, husk, blue slime, green slime, giant rat, badger
       -Difficulty 2: cougar, mangy bear, zombie, ghoul, red slime, purple slime, hag
-      -Difficulty 3: chupacabra, grizzly bear, dire wolf, werewolf
+      -Difficulty 3: chupacabra, grizzly bear, dire wolf, werewolf, werebear
     -Mansion
       -Difficulty 1: giant rat, snake, owl, badger
       -Difficulty 2: bandit, addict, roamer, hound
@@ -179,6 +201,35 @@ $(document).ready(function() {
       -Fires produce warmth and reveal extra items but attract the Hulking Horror
     -Flashlight: reveals items and examinables, depletes batteries
     -Batteries: Lasts for certain amount of ticks
+  -Weapons
+    -Level 1
+      -Fists
+      -Crowbar (car trunk)
+      -Shovel (shed)
+      -Hatchet
+      -Bat
+      -Stick
+      -Rake
+      -Decorative Rifle (mansion)
+      -Jumper Cables
+    -Level 2
+      -Sabre
+      -Axe
+      -Scythe
+      -Sword
+      -Dagger
+      -Knife
+      -Spiked Bat
+      -Sickle
+    -Level 3
+      -Revolver (.357 rounds)
+      -Pistol (9mm rounds)
+      -Flare Gun (flares)
+      -Throwing Knives
+      -Battleaxe
+      -Silver Sword (Lesser effect on living things)
+      -Crossbow (bolts)
+      -Bow (arrows)
 */
   //GLOBALS
   var tick = 0;
@@ -201,6 +252,11 @@ $(document).ready(function() {
   }).on('click', function() {
     var tid = $(this).attr("id");
     switchGameview(parseInt(tid.substr(tid.length - 1)));
+  });
+  $('.modal-bg').on('click', function() {
+    if($(this).hasClass('info-modal-bg')) {
+      $('.info-modal-bg').hide();
+    }
   });
   //INITIATE
   startClock();
@@ -233,6 +289,7 @@ $(document).ready(function() {
         iterateTime();
         $('.tickdisplay').text(displayTime);
       }
+      refreshConsoleStats();
       Player.onTick(tick);
       Player.locale.onTick(tick);
     }
@@ -275,7 +332,7 @@ $(document).ready(function() {
   function switchGameview(tab) {
     if(gameview == tab) { return; }
     $('#gameview' + tab).css({"right": "800px"});
-    if($('.nav-badge' + tab).text() != '') {
+    if($('.nav-badge' + tab).text() != '' && tab != 2) {
       $('.nav-badge' + tab).text('');
     }
     $('#gameview' + gameview).fadeOut({queue: false, duration: 150}).animate({left: "800px"}, 100, function() {
@@ -289,6 +346,22 @@ $(document).ready(function() {
     });**/
   }
 });
+function addInfoModalBtn(btnid, txt, press) {
+  var modtxt = $('<div class="modal-btn-text">' + txt + '</div>');
+  var modbtn = $('<div class="modal-btn info-modal-btn" id="modal-btn' + ($('.info-modal-btn').length + 1) + '"></div>');
+  modbtn.on('click', press);
+  modbtn.append(modtxt);
+  $('.info-modal-btns').append(modbtn);
+}
+function addItemListeners() {
+  $('.loc-li').on('click', function() {
+    var itemid = $(this).attr('id');
+    pickUpItem(itemid.substr(itemid.length-1));
+  });
+  $('.inv-li').on('click', function() {
+    openInfoModal('item', $(this).attr('id').substr($(this).attr('id').length - 1));
+  });
+}
 function adjustTabs() {
   var fw = $('.nav-tabs').width();
   var fh = $('.nav-tabs').height();
@@ -308,6 +381,24 @@ function changeLocale(dir) {
     appendLineR(["You can't go that way.", "There's nothing in that direction.", "There's something in the way."]);
   }
 }
+function consumeItemByName(n, amt) {
+  for(var i = 0; i < Player.items.length; i++) {
+    if(Player.items[i].name == n) {
+      if(Player.items[i].count > 1) {
+        Player.items[i].count -= 1;
+      } else {
+        Player.items.splice(i, 1);
+      }
+    }
+  }
+  updateItems();
+}
+function dropItem(itemid) {
+  var item = Player.items[itemid];
+  Player.items.splice(itemid, 1);
+  Player.locale.items.push(item);
+  updateItems();
+}
 function executeCommand(comm) {
   switch(comm[0]) {
     case "GO":
@@ -326,6 +417,24 @@ function localeSwitch(dir) {
   refreshConsoleExits();
   $('.locale-title').text(Player.locale.display.toUpperCase());
 }
+function openInfoModal(mode, id) {
+  $('.info-modal-btns').empty();
+  var btnind = 1;
+  if(mode == 'item') {
+    var item = Player.items[id];
+    if(item.onUse != undefined) {
+      addInfoModalBtn(btnind, 'Use', function() {
+        item.onUse();
+      });
+      btnind += 1;
+    }
+    addInfoModalBtn(btnind, 'Drop', function() {
+      dropItem(id);
+    });
+    
+  }
+  $('.info-modal-bg').fadeIn(100);
+}
 function openingRoll(tick) {
   if(tick == 2) { appendLine("A dirt backroad."); }
   if(tick == 3) { appendLine("Caledonia County, Vermont."); }
@@ -335,7 +444,17 @@ function openingRoll(tick) {
   if(tick == 11) {
     appendLine("Your car comes to a stop.");
     $('.tickdisplay').fadeIn({queue: false, duration: "slow"}).animate({fontSize: "1em"}, 1000);
+    updateItems();
   }
+}
+function pickUpItem(itemid) {
+  var i = Player.locale.items[itemid];
+  Player.locale.items.splice(itemid, 1);
+  Player.items.push(i);
+  $('#loc-item' + itemid).slideUp(180, function() {
+    updateItems();
+    appendLine('You pick up the ' + i.name.toLowerCase() + '.');
+  });
 }
 function refreshConsoleStats() {
   $('.hp-amt').text(Player.health);
@@ -352,5 +471,33 @@ function refreshConsoleExits() {
 			$('.console-exits').append(nameElement).append(exitLocale);
 		}
 	}
+}
+function updateItems() {
+  if(Player.locale.items.length > 0) {
+    $('.inv-badge').text(Player.locale.items.length);
+  } else {
+    $('.inv-badge').text('');
+  }
+  $('.igv-li').remove();
+  for(var i = 0; i < Player.locale.items.length; i++) {
+    var item = Player.locale.items[i];
+    if(item.count > 1) {
+      var itag = $('<li class="igv-li loc-li" id="loc-item' + i + '">' + item.name + ' (' + item.count + ')' + '</li>');
+    } else {
+      var itag = $('<li class="igv-li loc-li" id="loc-item' + i + '">' + item.name + '</li>');
+    }
+    $('.locale-list').append(itag);
+  }
+  for(var j = 0; j < Player.items.length; j++) {
+    var it = Player.items[j];
+    if(it.count > 1) {
+      var itag = $('<li class="igv-li inv-li" id="inv-item' + i + '" style="display:none;">' + it.name + ' (' + it.count + ')' + '</li>');
+    } else {
+      var itag = $('<li class="igv-li inv-li" id="inv-item' + i + '" style="display:none;">' + it.name + '</li>');
+    }
+    $('.inventory-list').append(itag);
+    $('.igv-li').fadeIn();
+  }
+  addItemListeners();
 }
 </script>

@@ -180,10 +180,12 @@
                         <p class="subheader tunes-blurb">Like snacks but for your ears.</p>
                         <div class="tune-player">
                             <ul class="tune-list">
-                                <li class="tune1"><span class="playbtn-span"><img class="playbtn" id="playbtn1" src="/media/playbtn.svg"></img></span>Tune 1</li>
-                                <li class="tune2"><span class="playbtn-span"><img class="playbtn" id="playbtn2" src="/media/playbtn.svg"></img></span>Tune 2</li>
-                                <li class="tune3"><span class="playbtn-span"><img class="playbtn" id="playbtn3" src="/media/playbtn.svg"></img></span>Tune 3</li>
-                                <li class="tune4"><span class="playbtn-span"><img class="playbtn" id="playbtn4" src="/media/playbtn.svg"></img></span>Tune 4</li>
+                                <li class="tune1"><span class="playbtn-span"><img class="playbtn" id="playbtn1" src="/media/playbtn.svg"></img></span>The Comb Up</li>
+                                <li class="tune2"><span class="playbtn-span"><img class="playbtn" id="playbtn2" src="/media/playbtn.svg"></img></span>Hang Glide</li>
+                                <li class="tune3"><span class="playbtn-span"><img class="playbtn" id="playbtn3" src="/media/playbtn.svg"></img></span>Viral OST</li>
+                                <li class="tune4"><span class="playbtn-span"><img class="playbtn" id="playbtn4" src="/media/playbtn.svg"></img></span>Outro</li>
+                                <li class="tune5"><span class="playbtn-span"><img class="playbtn" id="playbtn5" src="/media/playbtn.svg"></img></span>Jam Loop</li>
+                                <li class="tune6"><span class="playbtn-span"><img class="playbtn" id="playbtn5" src="/media/playbtn.svg"></img></span>Tune 13</li>
                             </ul>
                         </div>
                     </div>
@@ -221,6 +223,7 @@ $(document).ready(function() {
     var contentHeight = $('.content-view').height();
     var tunes = {};
     var tunePlaying = 0;
+    var tunePoll = undefined;
     //var pbWidth = $('.proj-browser').width();
     //var pbSelectedTab = 0;
     let pwLastBtnColor = '#666666';
@@ -440,7 +443,8 @@ $(document).ready(function() {
                 'margin-right': '0',
                 'padding-top': '1.25em'
             });
-			$('.section-tab').hide();
+            $('.nav-highlight').hide();
+            $('.section-tab').hide();
             $('.proj-browser').hide();
             $('.pw-header').css('font-size', '2.5em');
             $('.pw-body p').css('font-size', '1.2em');
@@ -465,7 +469,8 @@ $(document).ready(function() {
                 'margin-right': '0.32em',
                 'padding': '0'
             });
-			$('.section-tab').show();
+            $('.nav-highlight').show();
+            $('.section-tab').show();
             $('.content-area').css('margin-left', '86px');
             $('.jd-title').css('margin-left', '0.75em');
             $('.tile').css('margin-bottom', '0');
@@ -509,23 +514,36 @@ $(document).ready(function() {
         });
     }
     function loadTunes() {
-        loadTune(1);
+        for(var i = 1; i < 7; i++) {
+            loadTune(i);
+        }
     }
     function loadTune(tuneid) {
         var tune = document.createElement('audio');
         var src = document.createElement('source');
-        var tunename = '<undefined>';
+        var tunename = 'tune' + tuneid;
         tune.preload = 'auto';
         switch(tuneid) {
-            case 1:
-                src.src = '/media/9_draft2.mp3';
-                tunename = 'tune1';
+            case 1: src.src = '/media/tune_tcu_instr.mp3';
+                break;
+            case 2: src.src = '/media/tune_snowfall.mp3';
+                break;
+            case 3: src.src = '/media/viralOST.mp3';
+                break;
+            case 4: src.src = '/media/tune_9.mp3';
+                break;
+            case 5: src.src = '/media/tune_jam1.mp3';
+                break;
+            case 6: src.src = '/media/tune_13v2.mp3';
                 break;
             default:
                 break;
         }
         tune.appendChild(src);
-        tune.volume = 0.5;
+        tune.volume = 0.8;
+        tune.addEventListener('ended', function() {
+            stopTune(tuneid);
+        });
         tunes[tunename] = tune;
     }
     function playTune(tuneid) {
