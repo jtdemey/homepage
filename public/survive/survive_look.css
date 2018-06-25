@@ -1,6 +1,6 @@
 /* General */
 * {
-	font-family: "Arial";
+	font-family: "Titillium Web", "Arial", sans-serif;
 	padding: 0;
 	margin: 0;
 	-webkit-box-sizing: border-box;
@@ -93,7 +93,10 @@ html, body, .container-fluid {
 }
 
 .modal-text {
+  width: 80%;
   margin: auto;
+  padding-top: 2em;
+  font-family: "Titillium Web";
 }
 
 .modal-btns {
@@ -115,6 +118,41 @@ html, body, .container-fluid {
 
 .modal-btn-text {
   margin: auto;
+}
+
+.drop-counter {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  width: 100%;
+  height: 25px;
+  margin-top: 20px;
+}
+
+.item-count {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.left-arrow {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid #999999;
+  margin: auto;
+  cursor: pointer;
+}
+
+.right-arrow {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid #999999;
+  margin: auto;
+  cursor: pointer;
 }
 
 /* Console (GameView 1) */

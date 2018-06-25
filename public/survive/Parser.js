@@ -56,10 +56,10 @@ function parseDir(dir) {
     case "south": case "s": case "sout": case "southward": case "southwards":
       executeCommand(["GO", 1]);
       break;
-    case "west": case "w": case "wes": case "westward": case "westwards":
+      case "east": case "e": case "eas": case "eastward": case "eastwards":
       executeCommand(["GO", 2]);
       break;
-    case "east": case "e": case "eas": case "eastward": case "eastwards":
+    case "west": case "w": case "wes": case "westward": case "westwards":
       executeCommand(["GO", 3]);
       break;
     case "northeast": case "ne": case "northeas": case "northeastward": case "northeastwards":
