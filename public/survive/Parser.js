@@ -123,6 +123,9 @@ var Parser = {
               appendLineRC(["I can't understand that.", "Invalid input. Try 'help'.", "Input not understood.", "Try 'help' for a list of basic commands.",
                 "Couldn't understand that - try 'help'."], "#009999");
               break;
+            case "examine": case "look": case "examin": case "observe": case "describe":
+              executeCommand(["EXAMINE"]);
+              break;
           }
         }
         break;
@@ -139,3 +142,5 @@ var Parser = {
     }
   }
 }
+
+var executeCommand = function() { return; };
