@@ -56,10 +56,10 @@ function parseDir(dir) {
     case "south": case "s": case "sout": case "southward": case "southwards":
       executeCommand(["GO", 1]);
       break;
-    case "west": case "w": case "wes": case "westward": case "westwards":
+      case "east": case "e": case "eas": case "eastward": case "eastwards":
       executeCommand(["GO", 2]);
       break;
-    case "east": case "e": case "eas": case "eastward": case "eastwards":
+    case "west": case "w": case "wes": case "westward": case "westwards":
       executeCommand(["GO", 3]);
       break;
     case "northeast": case "ne": case "northeas": case "northeastward": case "northeastwards":
@@ -123,6 +123,9 @@ var Parser = {
               appendLineRC(["I can't understand that.", "Invalid input. Try 'help'.", "Input not understood.", "Try 'help' for a list of basic commands.",
                 "Couldn't understand that - try 'help'."], "#009999");
               break;
+            case "examine": case "look": case "examin": case "observe": case "describe":
+              executeCommand(["EXAMINE"]);
+              break;
           }
         }
         break;
@@ -139,3 +142,5 @@ var Parser = {
     }
   }
 }
+
+var executeCommand = function() { return; };

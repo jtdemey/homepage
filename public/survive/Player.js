@@ -26,7 +26,7 @@ var Player = {
     //Temp check
     if(tick % 5 == 0) {
       switch(this.locale.temperature) {
-        case "hot":
+        case 7:
           if(this.temperature < 150) {
             this.temperature = this.temperature + 3;
           } else {
@@ -38,7 +38,7 @@ var Player = {
           unfreezeCheck();
           unshiverCheck();
           break;
-        case "warm":
+        case 6:
           if(this.temperature < 120) {
             this.temperature = this.temperature + 2;
           } else if(this.temperature > 125) {
@@ -47,7 +47,7 @@ var Player = {
           unfreezeCheck();
           unshiverCheck();
           break;
-        case "normal":
+        case 5:
           unheatCheck();
           unfreezeCheck();
           unshiverCheck();
@@ -59,13 +59,13 @@ var Player = {
             this.temperature = this.temperature - 1;
           }
           break;
-        case "cold":
+        case 4:
           unheatCheck();
           if(this.temperature > 50) {
             this.temperature = this.temperature - 1;
           }
           break;
-        case "very cold":
+        case 3:
           unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 2;
@@ -81,7 +81,7 @@ var Player = {
             }
           }
           break;
-        case "freezing":
+        case 2:
           unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 3;
@@ -98,7 +98,7 @@ var Player = {
             this.freezeCheck("freezing");
           }
           break;
-        case "frigid":
+        case 1:
           unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 4;
@@ -115,7 +115,7 @@ var Player = {
             this.freezeCheck("frigid");
           }
           break;
-        case "glacial":
+        case 0:
           unheatCheck();
           if(this.temperature > 23) {
             this.temperature = this.temperature - 5;
@@ -134,7 +134,6 @@ var Player = {
           break;
       }
     }
-    refreshConsoleStats();
   },
   freezeCheck: function(templvl) {
     if(this.temperature < 10 && this.temperature > 0) {
