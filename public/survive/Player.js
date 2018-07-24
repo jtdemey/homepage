@@ -20,6 +20,9 @@ var Player = {
   locale: undefined,
   lastLocale: undefined,
   visited: new Array(),
+  inCombat: false,
+  lastCombat: 0,
+  currentEnemy: undefined,
   items: [],
   equipped: [],
   onTick: function(tick) {
