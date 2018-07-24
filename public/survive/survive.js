@@ -9,6 +9,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
 });
 /*
 	GAME NOTES
+  //APP IDEA: Bluetooth positional beacons giving contextual inventory searches of stores
 	-Day cycle represented by darkness of border?
 	-Areas
 		-Forest
@@ -88,8 +89,11 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
   function runSurvive() {
     //GLOBALS
     var tick = 0;
+    var paused = false;
     var gameview = 1;
     var linescroll = 0;
+    var scrollConsoleUp = undefined;
+    var scrollConsoleCD = false;
     var gameTime = new Date(1987, 11, 13, 2, 44, 0, 0);
     var displayTime = "Dec 13, 1987 2:44";
     var gameWidth = $('.survive-content').width();
@@ -98,7 +102,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
     $('.mainconsole').show();
     $('.linebox').css({"width": ((gameWidth / 4 * 3) + "px")});
     $('.nav-badge').css('backgroundColor', '#990000');
-    console.log($('.cl-area').offset().top);
+    //console.log($('.cl-area').offset().top);
     //DYNAMISM
     $(window).resize(adjustTabs);
     //LISTENERS
@@ -118,16 +122,26 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
     }).children().on('click', function(e) {
       return false;
     });
-    $('.line-area').on('mousedown', function(e) {
-      var laHeight = $(this).innerHeight();
-      var laOffset = $(this).offset();
-      var y = e.pageY - laOffset.top;
-      if((laHeight / 2) > y) {
-        $('.linebox').stop().animate({top: '+=50px'});
-        linescroll += 1;
-      } else {
-        resetLineScroll();
+    $('.line-area').on('mousedown touchstart', function(e) {
+      if(!scrollConsoleCD) {
+        paused = true;
+        scrollConsoleUp = setInterval(function() {
+          if(linescroll < 101) {
+            $('.linebox').css({bottom: '-=4px'});
+            linescroll += 1;
+            console.log(linescroll);
+          }
+        }, 40);
       }
+    }).on('mouseout touchend', function() {
+      paused = false;
+      clearInterval(scrollConsoleUp);
+      scrollConsoleCD = true;
+      $('.linebox').stop().animate({bottom: ('+=' + (linescroll * 4) + 'px')}, 200);
+      linescroll = 0;
+      setTimeout(function() {
+        scrollConsoleCD = false;
+      }, 1500);
     });
     //INITIATE
     Player.locale = gameMap.for_car;
@@ -137,7 +151,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       refreshConsoleExits();
     }, 6500);
     //I/O
-    $('.commandline').on('keydown',function(e) {
+    $('.commandline').on('keydown', function(e) {
       if(e.keyCode == 13) {
         if(linescroll > 0) {
           resetLineScroll();
@@ -157,15 +171,29 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
         }
       }
     });
+    $('.combat-input').on('keydown', function(e) {
+      if(e.keyCode == 13) {
+        var rawinput = $('.combat-input').val();
+        rawinput = rawinput.trim();
+        $(this).val('');
+        combatParse(rawinput);
+      }
+    });
     //GAME
     async function updateGame() {
-      if(tick % 10 == 0) {
-        iterateTime();
-        $('.tickdisplay').text(displayTime);
+      if(!paused) {
+        if(tick % 8 == 0) {
+          iterateTime();
+          $('.tickdisplay').text(displayTime);
+        }
+        refreshConsoleStats();
+        if(Player.inCombat == false) {
+          Player.onTick(tick);
+          Player.locale.onTick(tick);
+        } else {
+          combatTick(tick);
+        }
       }
-      refreshConsoleStats();
-      Player.onTick(tick);
-      Player.locale.onTick(tick);
     }
     //CORE FUNCTIONS
     async function startClock() {
@@ -173,11 +201,11 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       setTimeout(function() {
         appendLine('Your car comes to a stop.');
       }, 1000);
-      while(tick < 999999) {
+      while(tick < 999999999) {
         updateGame();
         tick = tick + 1;
-        if(tick > 999998) { tick = 0; }
-        await sleep(1000);
+        if(tick > 999999998) { tick = 0; }
+        await sleep(800);
         //Cleanup
         var highest = $('p:first').css('bottom');
         if(parseInt(highest) > 1000) {
@@ -260,6 +288,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       }, 180);
       setTimeout(function() {
         $('.splash-screen').fadeOut();
+        $('.tickdisplay').fadeIn(1200);
         updateItems();
       }, 3200);
     };
@@ -278,7 +307,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
     }
     function resetLineScroll() {
       var ldist = 50 * linescroll;
-      $('.linebox').stop().animate({top: ('-=' + ldist + 'px')});
+      $('.linebox').stop().animate({bottom: ('+=' + ldist + 'px')});
       linescroll = 0;
     }
     function switchGameview(tab) {
@@ -292,6 +321,9 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
         $('#gameview' + tab).fadeIn({queue: false, duration: 150}).animate({right: "800px"});
         gameview = tab;
       });
+      if(tab == 1) {
+        $('.commandline').focus();
+      }
       /**$('#gameview' + gameview).fadeOut({queue: false, duration: 400}).animate({left: "100px"}, 400, function() {
         gameview = tab;
         $('#gameview' + gameview).fadeIn({queue: false, duration: 400}).animate({right: "100px"}, 400);
@@ -378,6 +410,12 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       Player.locale.visits += 1;
       appendLine(Player.locale.enterPhrase);
       refreshConsoleExits();
+      if(Player.locale.enemies.length > 0) {
+        rollEnemySpawns(Player.locale.enemies);
+      }
+      if(Player.locale.loot.length > 0) {
+        rollLootTables(Player.locale.loot);
+      }
       updateItems();
       $('.locale-title').text(Player.locale.display.toUpperCase());
     }
@@ -489,18 +527,6 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       }
       return false;
     }
-    /**function openingRoll(tick) {
-      if(tick == 2) { appendLine("A dirt backroad."); }
-      if(tick == 3) { appendLine("Caledonia County, Vermont."); checkLinePos(); }
-      if(tick == 4) { appendLine("December 13th, 1987. 2:44AM."); }
-      if(tick == 6) { appendLineC("Survive.", "red"); }
-      if(tick == 9) { appendLine("The engine stalls."); }
-      if(tick == 11) {
-        appendLine("Your car comes to a stop.");
-        $('.tickdisplay').fadeIn({queue: false, duration: "slow"}).animate({fontSize: "1em"}, 1000);
-        updateItems();
-      }
-    }**/
     function pickUpItem(itemid) {
       var i = Player.locale.items[itemid];
       if(hasItem(i.name) && i.stackable == true) {
@@ -583,5 +609,87 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
         
       }
     }
+    //COMBAT
+    function appendCombatLine(line) {
+      var linediv = $('<div class="combat-linebox"></div>');
+      var newline = $('<p class="combat-line"></p>').text(line);
+      linediv.append(newline);
+      $('.combat-log').append(linediv);
+      $('.combat-linebox').animate({
+        bottom: '+=28px',
+        opacity: '-=0.12'
+      }, 100);
+      if($('.combat-linebox').position().top < ($('.combat-enemystats').position().top + $('.combat-enemystats').outerHeight(true))) {
+        $('.combat-linebox').first().remove();
+      }
+    }
+    function appendCombatLineR(lines) {
+      var chosen = Math.floor(Math.random() * lines.length);
+      appendCombatLine(lines[chosen]);
+    }
+    function combatParse(raw) {
+      
+    }
+    function combatTick(gametick) {
+      if(Player.currentEnemy.health < 1) {
+        Player.inCombat = false;
+        Player.currentEnemy = undefined;
+        console.log('combat end');
+        $('.combat-modal-bg').fadeOut(100);
+        return;
+      }
+      console.log(Player.currentEnemy.health);
+      if(Player.currentEnemy.cd < 1) {
+        var aroll = Math.floor(Math.random() * Player.currentEnemy.abilities.length);
+        console.log(Player.currentEnemy.abilities);
+        console.log(aroll);
+        var acode = Player.currentEnemy.abilities[aroll];
+        switch(acode[0]) {
+          case 'normal':
+            normalAttack(Player.currentEnemy, acode[1], acode[2], acode[3]);
+            break;
+        }
+      } else {
+        Player.currentEnemy.cd -= 1;
+      }
+    }
+    startCombat = function(enemy) {
+      Player.inCombat = true;
+      Player.lastCombat = tick;
+      Player.currentEnemy = enemy;
+      $('.combat-modal-bg').fadeIn(100);
+      $('.combat-input').focus();
+    }
+    normalAttack = function(enemy, mind, maxd, kind) {
+      enemy.cd = enemy.speed;
+      var aroll = Math.floor(Math.random() * 100);
+      if(enemy.attack > aroll) {
+        var m = mind;
+        var dmgs = [];
+        while(m <= (maxd + 1)) {
+          dmgs.push(m);
+          m += 1;
+        }
+        var d = randomFromSet(dmgs);
+        Player.health -= d;
+        if(kind == 'bite') {
+          appendCombatLineR(["The " + enemy.display.toLowerCase() + " gnashes its teeth and bites you.",
+          "The " + enemy.display.toLowerCase() + " sinks its teeth into your arm.",
+          "The " + enemy.display.toLowerCase() + " bites you.",
+          "The " + enemy.display.toLowerCase() + " attacks you with its ravenous bite.",
+          "You wince in pain as the " + enemy.display.toLowerCase() + " bites you."]);
+        }
+      } else {
+        if(kind == 'bite') {
+          appendCombatLineR(["The " + enemy.display.toLowerCase() + " misses its bite.",
+            "The " + enemy.display.toLowerCase() + " lunges forward but misses.",
+            "The " + enemy.display.toLowerCase() + "'s bite barely misses your neck.",
+            "The " + enemy.display.toLowerCase() + "'s bite barely misses your leg.",
+            "The " + enemy.display.toLowerCase() + "'s bite barely misses your body.",
+            "The " + enemy.display.toLowerCase() + " attempts to bite you but misses."]);
+        }
+      }
+      $('.combat-enemy-cd').css({width: '100%'}).stop().animate({width: '0%'}, (Player.currentEnemy.cd + 1) * 800);
+    };
   }
 });

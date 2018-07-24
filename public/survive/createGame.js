@@ -1,5 +1,6 @@
 var gameMap = {};
 //Constants
+//Lee's landing marina
 const CARDINAL_DIRS = {
   "N": 0,
   "S": 1,
@@ -94,12 +95,13 @@ function createEnemy(eid) {
     health: 1,
     attack: 1,
     speed: 1,
+    cd: 0,
     abilities: []
   };
   switch(eid) {
     case 0:
-      e.display = "Wolf"; e.health = randomFromSet([12, 13, 14, 15]); e.attack = 65; e.speed = 4;
-      e.abilities.push(function() { normalAttack(e, 3, 8, 'bite') });
+      e.display = "Wolf"; e.health = randomFromSet([12, 13, 14, 15]); e.attack = 65; e.speed = 6;
+      e.abilities.push(['normal', 7, 13, 'bite']);
       break;
   }
   return e;
@@ -118,11 +120,9 @@ function createItem(n, am) {
     case "Handwarmers":
       item.stackable = true;
       item.desc = 'Small packets that emit heat for a few minutes - a meager relief from the cold.';
-      item.onUse = function() { useHandwarmers(); };
       break;
     case "Flashlight":
-      item.desc = 'A small portable torch that uses batteries - it makes it easier to navigate and spot things.';
-      item.onUse = function() { useFlashlight(); };
+      item.desc = 'A small portable torch that uses batteries - using it makes it easier to navigate and spot things.';
       break;
     case "Batteries":
       item.stackable = true;
@@ -131,41 +131,12 @@ function createItem(n, am) {
     case "Tinder":
       item.stackable = true;
       item.desc = 'A small bundle of dry foliage - perfect for starting small fires.';
-      item.onUse = function() { startSmallFire(); };
       break;
   }
   return item;
 }
 //Attack funcs
-var normalAttack = function(enemy, mind, maxd, kind) {
-  var aroll = Math.ceil(Math.random() * 100);
-  if(enemy.attack > aroll) {
-    var m = mind;
-    var dmgs = [];
-    while(m <= (maxd + 1)) {
-      dmgs.push(m);
-      m += 1;
-    }
-    var d = randomFromSet(dmgs);
-    Player.health -= d;
-    if(kind == 'bite') {
-      appendLineR(["The " + enemy.display.toLowerCase() + " gnashes its teeth and bites you.",
-      "The " + enemy.display.toLowerCase() + " sinks its teeth into your arm. You struggle free.",
-      "The " + enemy.display.toLowerCase() + " bites you.",
-      "The " + enemy.display.toLowerCase() + " attacks you with its ravenous bite.",
-      "You wince in pain as the " + enemy.display.toLowerCase() + " bites you."]);
-    }
-  } else {
-    if(kind == 'bite') {
-      appendLineR(["The " + enemy.display.toLowerCase() + " misses its bite.",
-        "The " + enemy.display.toLowerCase() + " lunges forward but misses.",
-        "The " + enemy.display.toLowerCase() + "'s bite barely misses your neck.",
-        "The " + enemy.display.toLowerCase() + "'s bite barely misses your leg.",
-        "The " + enemy.display.toLowerCase() + "'s bite barely misses your body.",
-        "The " + enemy.display.toLowerCase() + " attempts to bite you but misses."]);
-    }
-  }
-};
+var normalAttack, drainAttack, multiHitAttack = function() { return; };
 //Generation funcs
 function generateRoads() {
   var rid = 0;
@@ -177,7 +148,7 @@ function generateRoads() {
     "The road stretches onward, with dark forest to the north and south.",
     "The dead trees encompass the road in a canopy.",
     "You stand in the road with the bleak sky above."];
-  var rcom = ["The blanket of snow on the road lies flat with slight indentations from animal tracks.",
+  var rcom = ["The snow on the road lies flat with slight indentations from animals.",
     "The woods to the north and south look formidable and dark.",
     "You can't shake the feeling that you're not alone.",
     "A faint, silent breeze gently sweeps the snowy road.",
@@ -228,7 +199,7 @@ function rollLootTables(items) {
   for(var i = 0; i < items.length; i++) {
     sum += items[i][1];
   }
-  var roll = Math.ceiling(Math.random() * sum);
+  var roll = Math.ceil(Math.random() * sum);
   var rangebuffer = 0;
   for(var j = 0; j < items.length; j++) {
     if(roll > rangebuffer && roll <= (rangebuffer + items[j][1])) {
@@ -239,6 +210,26 @@ function rollLootTables(items) {
         addItem(items[j][0], items[j][2], Player.locale.name);
       }
     }
+    rangebuffer += items[j][1];
+  }
+}
+function rollEnemySpawns(enemies) {
+  var sum = 0;
+  for(var i = 0; i < enemies.length; i++) {
+    sum += enemies[i][1];
+  }
+  var roll = Math.ceil(Math.random() * sum);
+  var rangebuffer = 0;
+  for(var j = 0; j < enemies.length; j++) {
+    if(roll > rangebuffer && roll <= (rangebuffer + enemies[j][1])) {
+      if(enemies[j][0] == 'none') {
+        return;
+      } else {
+        var enemy = createEnemy(enemies[j][0]);
+        startCombat(enemy);
+      }
+    }
+    rangebuffer += enemies[j][1];
   }
 }
 /**
@@ -357,11 +348,11 @@ addLocale("for_frontyd", "Front Yard",
 addItem("Handwarmers", 2, "for_car");
 /***LOOT***********************************************************************************************************************/
 addLoot("Tinder", "for_mailbox", 50, 1);
-addLoot("none", "for_mailbox", 50, 1);
+addLoot("none", "for_mailbox", 10, 1);
 /***FEATURES***********************************************************************************************************************/
 addContainer("Glovebox", "for_car", false, [["Handwarmers", 1], ["Flashlight", 1], ["Batteries", 2]], []);
 /***ENEMIES***********************************************************************************************************************/
-
+addEnemy(0, "for_mailbox", 5000);
 /***SPAWNS***********************************************************************************************************************/
 
 for(var l in gameMap) {

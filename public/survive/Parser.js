@@ -123,7 +123,7 @@ var Parser = {
               appendLineRC(["I can't understand that.", "Invalid input. Try 'help'.", "Input not understood.", "Try 'help' for a list of basic commands.",
                 "Couldn't understand that - try 'help'."], "#009999");
               break;
-            case "examine": case "look": case "examin": case "observe": case "describe":
+            case "examine": case "look": case "examin": case "observe": case "describe": case "what":
               executeCommand(["EXAMINE"]);
               break;
           }
@@ -138,9 +138,13 @@ var Parser = {
         case "proceed": case "advance": case "progress": case "flee": case "sprint":
           parseDir(inputsp[1].toLowerCase());
           break;
+        case "examine": case "look": case "examin": case "observe": case "describe": case "what":
+          executeCommand(["EXAMINE", inputsp[1].toLowerCase()]);
+          break;
       }
     }
   }
 }
 
-var executeCommand = function() { return; };
+//I'VE GOT YOU IN MY SIGHTS
+var executeCommand, startCombat = function() { return; };
