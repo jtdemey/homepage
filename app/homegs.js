@@ -13,13 +13,50 @@ const url = require('url');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
+const mysql = require('mysql');
+var DB_ENABLED = false;
 site.use(bodyParser.urlencoded({ extended: false }));
 site.use(bodyParser.json());
 site.use(express.static(__dirname + '/../public'));
+//Db start
+var dbauth = 'none';
+fs.readFile('D:/Misc/auth/wegotdb.txt', 'utf8', function(err, data) {
+  if(err) {
+    console.log('!!! Error in retrieving database authentication info. !!!');
+  }
+  dbauth = data;
+});
+var connectBot = undefined;
+setTimeout(function() {
+  connectBot = mysql.createPool({
+    connectionLimit : 100,
+    host     : 'localhost',
+    user     : 'connectBot',
+    password : dbauth,
+    database : 'jdhomepage',
+    debug    :  false
+  });
+  //Test query
+  connectBot.getConnection(function(err, connection) {
+    if(err) {
+      console.log("Error in establishing database connection.");
+      console.log(err);
+      return;
+    } else {
+      console.log("DB connection established.");
+    }
+    connection.release();
+    connection.on('error', function(err) {
+      console.log("Error in establishing database connection.");
+      console.log(err);
+      return;
+    });
+  });
+}, 2000);
+//Email protocols
 var mailkey = 'none';
 var transporter;
-//Email protocols
-fs.readFile('D:/Misc/verify.txt', 'utf8', function(err, data) {
+fs.readFile('D:/Misc/auth/verify.txt', 'utf8', function(err, data) {
   if(err) {
     console.log('!!! Error in retrieving email info. Email services are unavailable. !!!');
   }
@@ -47,6 +84,7 @@ const PORT_NUM = 5260;
 /******************************************************************************************************/
 //Root page
 site.get('/', function(req, res) {
+  logConnection(req);
 	if(req.url == "/look.css") {
 		res.set("Content-Type", "text/css");
 		if(pathmode == 0) {
@@ -82,6 +120,69 @@ site.get('/survive', function(req, res) {
 			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/survive.html'));
 		}
 	}
+});
+
+site.get('/gamesuite', function(req, res) {
+  if(pathmode == 0) {
+    res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/lobby.html'));
+  } else if(pathmode == 1) {
+    res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/lobby.html'));
+  }
+});
+
+//Game pages
+site.get('/tweetlord/:gameCode', function(req, res) {
+  if(req.url == "/tweetlord/neon.css") {
+    res.set("Content-Type", "text/css");
+    if(pathmode == 0) {
+      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/neon.css'));
+    } else if(pathmode == 1) {
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/neon.css'));
+    }
+  } else {
+    res.set("Content-Type", "text/html");
+    if(pathmode == 0) {
+      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/tweetlord.html'));
+    } else if(pathmode == 1) {
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/tweetlord.html'));
+    }
+  }
+});
+
+site.get('/imposter/:gameCode', function(req, res) {
+  if(req.url == "/imposter/iridium.css") {
+    res.set("Content-Type", "text/css");
+    if(pathmode == 0) {
+      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/iridium.css'));
+    } else if(pathmode == 1) {
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/iridium.css'));
+    }
+  } else {
+    res.set("Content-Type", "text/html");
+    if(pathmode == 0) {
+      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/imposter.html'));
+    } else if(pathmode == 1) {
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/imposter.html'));
+    }
+  }
+});
+
+site.get('/pistolwhip', function(req, res) {
+    if(req.url == "/pistolwhip/platinum.css") {
+    res.set("Content-Type", "text/css");
+    if(pathmode == 0) {
+      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/platinum.css'));
+    } else if(pathmode == 1) {
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/platinum.css'));
+    }
+  } else {
+    res.set("Content-Type", "text/html");
+    if(pathmode == 0) {
+      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/pistolwhip.html'));
+    } else if(pathmode == 1) {
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/pistolwhip.html'));
+    }
+  }
 });
 
 site.get('/roleroller', function(req, res) {
@@ -146,70 +247,6 @@ var PLAYERLIST = {};
 /*******************************************************************************************************************************/
 //Imposter functions
 var imposter = require('./imposterFuncs.js');
-/*******************************************************************************************************************************/
-//Root page
-site.get('/gamesuite', function(req, res) {
-  if(pathmode == 0) {
-    res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/lobby.html'));
-  } else if(pathmode == 1) {
-    res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/lobby.html'));
-  }
-});
-
-//Game pages
-site.get('/tweetlord/:gameCode', function(req, res) {
-  if(req.url == "/tweetlord/neon.css") {
-    res.set("Content-Type", "text/css");
-    if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/neon.css'));
-    } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/neon.css'));
-    }
-  } else {
-    res.set("Content-Type", "text/html");
-    if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/tweetlord.html'));
-    } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/tweetlord.html'));
-    }
-  }
-});
-
-site.get('/imposter/:gameCode', function(req, res) {
-  if(req.url == "/imposter/iridium.css") {
-    res.set("Content-Type", "text/css");
-    if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/iridium.css'));
-    } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/iridium.css'));
-    }
-  } else {
-    res.set("Content-Type", "text/html");
-    if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/imposter.html'));
-    } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/imposter.html'));
-    }
-  }
-});
-
-site.get('/pistolwhip', function(req, res) {
-    if(req.url == "/pistolwhip/platinum.css") {
-    res.set("Content-Type", "text/css");
-    if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/platinum.css'));
-    } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/platinum.css'));
-    }
-  } else {
-    res.set("Content-Type", "text/html");
-    if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/pistolwhip.html'));
-    } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/pistolwhip.html'));
-    }
-  }
-});
 /*******************************************************************************************************************************/
 //Lobby forms
 site.post('/scripts/makeGame', function(req, res) {
@@ -304,30 +341,32 @@ site.post('/scripts/joinGame', function(req, res) {
 
 //Contact form
 site.post('/scripts/contact', function(req, res) {
-    var name = req.body.contactName;
-    var text = req.body.contactText;
-    var mail = {
-      from: 'thesoapypenguin@gmail.com',
-      to: 'johntdemey@live.com',
-      subject: ('SITE CONTACT REQUEST: ' + name),
-      html: ('New request received from ' + name + '     Request: ' + text)
+  var name = htmlEncode(req.body.contactName);
+  var text = htmlEncode(req.body.contactText);
+  connectBot.getConnection(function(err, connection) {
+    if(err) {
+      console.log('Error in storing contact request.');
+      console.log('From: ' + name);
+      console.log('Message: ' + text);
+      return;
     }
-    if(transporter == 'none') {
-      console.log('New request received, but email services are unavailable.')
-      console.log('NAME: ' + name);
-      console.log('REQUEST: ' + text);
-    } else {
-      transporter.sendMail(mail, function(error, info) {
-        if(error) {
-          console.log('!!! Error in sending request email !!!');
-          console.log(mail);
-        } else {
-          console.log('Request email deployed: ' + info.response);
-        }
-      });
-    }
-    res.render('form', {req: req.body});
-    res.end();
+    connection.query("INSERT INTO contactRequests (requestName, requestBody) VALUES ('" + name + "', '" + text + "')", function(err, result, fields) {
+      connection.release();
+      if(err) {
+        console.log('Error in saving contact request to db');
+        console.log(name + ' ' + text);
+        console.log(err);
+        return;
+      }
+      console.log('Contact request saved to db.');
+    });
+    connection.on('error', function(err) {
+      console.log('Error in storing contact request.');
+      console.log('From: ' + name);
+      console.log('Message: ' + text);
+      return;
+    });
+  });
 });
 /*******************************************************************************************************************************/
 //Sockets
@@ -593,6 +632,33 @@ function startClock() {
 }
 /*******************************************************************************************************************************/
 //Utility functions
+function contactEmail(req, res) {
+  var name = htmlEncode(req.body.contactName);
+  var text = htmlEncode(req.body.contactText);
+  var mail = {
+    from: 'thesoapypenguin@gmail.com',
+    to: 'johntdemey@live.com',
+    subject: ('SITE CONTACT REQUEST: ' + name),
+    html: ('New request received from ' + name + '     Request: ' + text)
+  }
+  if(transporter == 'none') {
+    console.log('New request received, but email services are unavailable.')
+    console.log('NAME: ' + name);
+    console.log('REQUEST: ' + text);
+  } else {
+    transporter.sendMail(mail, function(error, info) {
+      if(error) {
+        console.log('!!! Error in sending request email !!!');
+        console.log(mail);
+      } else {
+        console.log('Request email deployed: ' + info.response);
+      }
+    });
+  }
+  res.render('form', {req: req.body});
+  res.end();
+}
+
 function emitToGame(event, gc) {
     if(Object.keys(GAMELIST).length == 0) {
       console.log("No games in progress, going idle...");
@@ -651,6 +717,16 @@ function generateGC() {
     return gc;
 }
 
+function generateSessionID() {
+  var sesschars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+  var sessid = '';
+  for(var i = 0; i < 32; i++) {
+    var rc = sesschars.charAt(Math.floor(Math.random() * 62));
+    sessid = sessid + rc;
+  }
+  return sessid;
+}
+
 function getGame(gc) {
     var found = 0;
     var keys = Object.keys(GAMELIST);
@@ -666,6 +742,13 @@ function getGame(gc) {
     }
 }
 
+function htmlEncode(str) {
+  var el = document.createElement("div");
+  el.innerText = el.textContent = str;
+  str = el.innerHTML;
+  return str;
+}
+
 function isEmpty(obj) {
     if (obj == null) return true;
     if (obj.length > 0)    return false;
@@ -675,6 +758,39 @@ function isEmpty(obj) {
         if (hasOwnProperty.call(obj, key)) return false;
     }
     return true;
+}
+
+function logConnection(req) {
+  var visitaddr = null;
+  var visitproxy = null;
+  if(req.headers['via']) {
+    visitaddr = req.headers['x-forwarded-for'];
+    visitproxy = req.headers['via'];
+  } else {
+    visitaddr = req.connection.remoteAddress;
+    visitproxy = 'none';
+  }
+  connectBot.getConnection(function(err, connection) {
+    if(err) {
+      console.log('Error logging client connection ' + visitaddr + ' /// ' + visitproxy);
+      console.log(err);
+    } else {
+      connection.query("INSERT INTO visits (clientIP, clientProxy) VALUES ('" + visitaddr + "', '" + visitproxy + "')", function(err, result, fields) {
+        connection.release();
+        if(err) {
+          console.log('Error in logging connection.');
+          console.log(err);
+          return;
+        } else {
+          console.log('Client ' + visitaddr + ' connected with proxy = ' + visitproxy);
+        }
+      });
+    }
+    connection.on('error', function(err) {
+      console.log('Error in logging client connection ' + visitaddr + ' /// ' + visitproxy);
+      console.log(err);
+    });
+  });
 }
 
 function restartApp() {
@@ -698,18 +814,7 @@ function restartApp() {
         console.log('APPLICATION RESTARTED');
     });
 }
-
-function generateSessionID() {
-  var sesschars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-  var sessid = '';
-  for(var i = 0; i < 32; i++) {
-    var rc = sesschars.charAt(Math.floor(Math.random() * 62));
-    sessid = sessid + rc;
-  }
-  return sessid;
-}
 /*******************************************************************************************************************************/
-/******************************************************************************************************/
 serv.listen(PORT_NUM, function() {
 	console.log("      ,',                                   ,',");
 	console.log("     ', ,'                                 ', ,'");
@@ -720,4 +825,4 @@ serv.listen(PORT_NUM, function() {
 	console.log("  '---'(O)(O)'---------'(O)(O)'---'     '---'(O)(O)'---------'(O)(O)'---'");
 	console.log("=================================================================================");
 });
-/******************************************************************************************************/
+/*******************************************************************************************************************************/
