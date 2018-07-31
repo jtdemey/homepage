@@ -316,44 +316,49 @@ addLocale("for_car", "Car",
 );
 addLocale("for_mailbox", "Mailbox",
   ["for_shedpath",0,"for_road7","for_road6",0,0,0,0,0,0,"for_car",0],
-  ["You head down the driveway toward the mansion.",0,0,0,0,0,0,0,0,0,"You open the driver side door of your car.",0],
+  ["You head down the driveway toward the mansion.",0,"You travel down the road.","You troad along the snow-padded road.",0,0,0,0,0,0,"You open the driver side door of your car.",0],
   3, 4,
   "You stand at the edge of a driveway running north. There's a mailbox here.",
   ["To the north stands a dark mansion shrouded by dead foliage.", "It sure is cold out here.", "You see a small shed to the north.", "Your car is collecting a light layer of snow."]
 );
 //Yard region
 addLocale("for_shedpath", "Driveway",
-  ["for_frontyd","for_mailbox","for_shed",0,0,0,0,0,0,0,0,0],
-  ["You continue down the driveway.",0,"The heavy shed door swings open in the wind.",0,0,0,0,0,0,0,0,0],
+  ["for_frontyd","for_mailbox","for_shed",0,0,0,0,0,0,0,"for_shed",0],
+  ["You continue down the driveway.","You step towards the snowy roadside.","The heavy shed door swings open in the wind.",0,0,0,0,0,0,0,0,0],
   3, 4,
   "You are on a large driveway running north with a shed resting to the east.",
   ["Your car rests to the south by the old mailbox.", "A chill runs through the air.",
     "To the north is the overgrown front yard to an old estate.", "You can see your car resting idly to the south."],
 );
 addLocale("for_shed", "Shed",
-  [0,0,0,"for_shedpath",0,0,0,0,0,0,0,0],
+  [0,0,0,"for_shedpath",0,0,0,0,0,0,0,"for_shedpath"],
   [0,0,0,"The shoddy shed door swings open.",0,0,0,0,0,0,0,0],
   4, 4,
   "You step inside the modest tool shed.",
   ["The shoddy wooden walls aren't very good at keeping the cold out.", "The floor is merely heavily-trampled dirt.", "The gentle wind whistles through the cracks in the walls."]
 );
 addLocale("for_frontyd", "Front Yard",
-  [0,0,0,0,0,0,0,0],
+  [0,"for_shedpath","for_frontgarden",0,0,0,0,0],
   [0,0,0,0,0,0,0,0],
   3, 4,
   "Dense, dead overgrowth covers the mansion to the north. A shoddy cobblestone well stands to the west.",
   ["A thick layer of dead ivy and vines encompasses the western half of the mansion's face."]
 );
-/***ITEMS***********************************************************************************************************************/
+/***ITEMS**************************************************************************************************************************/
 addItem("Handwarmers", 2, "for_car");
-/***LOOT***********************************************************************************************************************/
+/***LOOT***************************************************************************************************************************/
 addLoot("Tinder", "for_mailbox", 50, 1);
 addLoot("none", "for_mailbox", 10, 1);
-/***FEATURES***********************************************************************************************************************/
+/***CONTAINERS*********************************************************************************************************************/
 addContainer("Glovebox", "for_car", false, [["Handwarmers", 1], ["Flashlight", 1], ["Batteries", 2]], []);
-/***ENEMIES***********************************************************************************************************************/
+addContainer("Car Trunk", "for_mailbox", false, [["Crowbar", 1]], [["Jumper Cables", 2]]);
+/***FEATURES***********************************************************************************************************************/
+addFeature("Rearview Mirror", "for_car", 1, ["The mirror reflects nothing.", "Must be a new moon."]);
+addFeature("Side Mirror", "for_car", 1, ["The road behind you stretches on seemingly endlessly."]);
+addFeature("Windshield", "for_car", 1, ["The inside of the windshield is coated with a spotty fog."]);
+/***ENEMIES************************************************************************************************************************/
 addEnemy(0, "for_mailbox", 5000);
-/***SPAWNS***********************************************************************************************************************/
+/***SPAWNS*************************************************************************************************************************/
 
 for(var l in gameMap) {
   if(gameMap.hasOwnProperty(l)) {
