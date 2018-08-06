@@ -186,6 +186,9 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
           iterateTime();
           $('.tickdisplay').text(displayTime);
         }
+        if(Player.health < 1) {
+          playerDeath();
+        }
         refreshConsoleStats();
         if(Player.inCombat == false) {
           Player.onTick(tick);
@@ -229,7 +232,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
         case 10: displayTime = "Nov"; break;
         case 11: displayTime = "Dec"; break;
       }
-      displayTime = displayTime + " " + gameTime.getDate() + ", " + gameTime.getFullYear() + " " + gameTime.getHours() + ":" + gameTime.getMinutes();
+      displayTime = displayTime + " " + gameTime.getDate() + ", " + gameTime.getFullYear() + " " + gameTime.getHours() + ":" + (gameTime.getMinutes() < 10 ? '0':'') + gameTime.getMinutes();
     }
     //UTILITIES
     executeCommand = function(comm) {
@@ -244,6 +247,15 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
     }
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    function getTimeSurvived(currTime) {
+      var startTime = new Date(1987, 11, 13, 2, 44, 0, 0);
+      var millDiff = currTime.getTime() - startTime.getTime();
+      var hours = Math.floor(millDiff / (1000*60*60));
+      var hourstr = hours + ((hours == 1) ? ' hour, ' : ' hours, ');
+      var minutes = Math.floor(millDiff / (1000*60));
+      var minstr = minutes + ((minutes == 1) ? ' minute.' : ' minutes.');
+      return hourstr + minstr;
     }
     //OPENING
     var openingRoll = $(function() {
@@ -638,20 +650,68 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
         $('.combat-modal-bg').fadeOut(100);
         return;
       }
-      console.log(Player.currentEnemy.health);
       if(Player.currentEnemy.cd < 1) {
         var aroll = Math.floor(Math.random() * Player.currentEnemy.abilities.length);
-        console.log(Player.currentEnemy.abilities);
-        console.log(aroll);
         var acode = Player.currentEnemy.abilities[aroll];
         switch(acode[0]) {
           case 'normal':
             normalAttack(Player.currentEnemy, acode[1], acode[2], acode[3]);
             break;
+          case 'intimidate':
+            intimidateAttack(Player.currentEnemy, acode[1], acode[2], acode[3]);
+            break;
         }
       } else {
         Player.currentEnemy.cd -= 1;
       }
+    }
+    function damagePlayer(stat, am) {
+      if(stat == 'health') {
+        Player.health -= am;
+        var hpgradient = undefined;
+        if(Player.health < 26 && Player.health > 10) {
+          hpgradient = 'linear-gradient(to right, #ffcccc, #d9d9d9, #d9d9d9, #d9d9d9, #d9d9d9, #d9d9d9, #d9d9d9, #ffcccc)';
+        } else if(Player.health < 11 && Player.health > 5) {
+          hpgradient = 'linear-gradient(to right, #ffb3b3, #d9d9d9, #d9d9d9, #d9d9d9, #d9d9d9, #d9d9d9, #ffb3b3)';
+        } else if(Player.health < 6) {
+          hpgradient = 'linear-gradient(to right, #ff9999, #d9d9d9, #d9d9d9, #d9d9d9, #d9d9d9, #d9d9d9, #ff9999)';
+        } else {
+          hpgradient = '#d9d9d9';
+        }
+        $('.mainconsole').css({ 'background': hpgradient });
+        if($('.combat-modal-bg').css('display') != 'none') {
+          var damspan = $('<div class="hp-damage"></div>');
+          $('.combat-playerstats').append(damspan);
+          $('.damspan').animate({ 'bottom': '+=20px' }).remove();
+        }
+      } else if(stat == 'sanity') {
+        Player.sanity -= am;
+      }
+    }
+    function getAttackDamage(mind, maxd) {
+      var m = mind;
+      var dmgs = [];
+      while(m <= (maxd + 1)) {
+        dmgs.push(m);
+        m += 1;
+      }
+      var d = randomFromSet(dmgs);
+      return d;
+    }
+    function playerDeath() {
+      paused = true;
+      $('.splash-subtitle').text('');
+      if($('.modal-bg').css('display') == 'none') {
+        $('.modal-bg').fadeOut(150);
+      }
+      var deathPhrases = ['You have died.', 'You are dead.', 'You have perished.', 'Death embraces you.'];
+      $('.splash-screen').fadeIn(1200);
+      $('.splash-title').text(randomFromSet(deathPhrases));
+      $('#splash-sub0').text('You survived');
+      $('#splash-sub1').text(getTimeSurvived(gameTime));
+      $('#splash-sub2').text();
+      $('.splash-subtitle').fadeIn(500);
+      var retryButton = $('<div class="splash-retry-btn"></div>');
     }
     startCombat = function(enemy) {
       Player.inCombat = true;
@@ -659,19 +719,48 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       Player.currentEnemy = enemy;
       $('.combat-modal-bg').fadeIn(100);
       $('.combat-input').focus();
+    };
+    function updateCombatBars() {
+      var php = $('.combat-player-hp').css('width').substring(0, $('.combat-player-hp').css('width').length - 1);
+      if(Player.health != parseInt(php)) {
+        $('.combat-player-hp').stop().animate({
+          'width': Player.health + '%'
+        }, 150);
+      }
+      var psp = $('.combat-player-sp').css('width').substring(0, $('.combat-player-sp').css('width').length - 1);
+      if(Player.currentEnemy.sanity != parseInt(psp)) {
+        $('.combat-player-sp').stop().animate({
+          'width': Player.sanity + '%'
+        }, 300);
+      }
+      var ehp = $('.combat-enemy-hp').css('width').substring(0, $('.combat-enemy-hp').css('width').length - 1);
+      var ehppct = Player.currentEnemy.health / Player.currentEnemy.maxHealth * 100;
+      if(Player.currentEnemy.health != parseInt(ehp)) {
+        $('.combat-enemy-hp').stop().animate({
+          'width': ehppct + '%'
+        }, 150);
+      }
+    }
+    //ATTACKS
+    intimidateAttack = function(enemy, mind, maxd, kind) {
+      enemy.cd = enemy.speed - 1;
+      var d = getAttackDamage(mind, maxd);
+      damagePlayer('health', d);
+      if(kind == 'growl') {
+        appendCombatLineR(["The " + enemy.display.toLowerCase() + " lets out a ferocious growl.",
+        "The " + enemy.display.toLowerCase() + " snarls aggressively.",
+        "The " + enemy.display.toLowerCase() + " startles you with a loud growl.",
+        "The " + enemy.display.toLowerCase() + " emits a guttural growl."]);
+      }
+      $('.combat-enemy-cd').css({width: '100%'}).stop().animate({width: '0%'}, (Player.currentEnemy.cd + 1) * 800, 'linear');
+      updateCombatBars();
     }
     normalAttack = function(enemy, mind, maxd, kind) {
       enemy.cd = enemy.speed;
       var aroll = Math.floor(Math.random() * 100);
       if(enemy.attack > aroll) {
-        var m = mind;
-        var dmgs = [];
-        while(m <= (maxd + 1)) {
-          dmgs.push(m);
-          m += 1;
-        }
-        var d = randomFromSet(dmgs);
-        Player.health -= d;
+        var d = getAttackDamage(mind, maxd);
+        damagePlayer('health', d);
         if(kind == 'bite') {
           appendCombatLineR(["The " + enemy.display.toLowerCase() + " gnashes its teeth and bites you.",
           "The " + enemy.display.toLowerCase() + " sinks its teeth into your arm.",
@@ -689,7 +778,8 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
             "The " + enemy.display.toLowerCase() + " attempts to bite you but misses."]);
         }
       }
-      $('.combat-enemy-cd').css({width: '100%'}).stop().animate({width: '0%'}, (Player.currentEnemy.cd + 1) * 800);
+      $('.combat-enemy-cd').css({width: '100%'}).stop().animate({width: '0%'}, (Player.currentEnemy.cd + 1) * 800, 'linear');
+      updateCombatBars();
     };
   }
 });

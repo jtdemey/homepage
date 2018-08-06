@@ -39,10 +39,10 @@
 <body>
   <div class="splash-screen">
     <div class="splash-titles">
+      <h1 class="splash-title"></h1>
       <h4 class="splash-subtitle" id="splash-sub0"></h4>
       <h4 class="splash-subtitle" id="splash-sub1"></h4>
       <h4 class="splash-subtitle" id="splash-sub2"></h4>
-      <h1 class="splash-title"></h1>
     </div>
   </div>
   <div class="info-modal-bg modal-bg">
@@ -58,12 +58,60 @@
   </div>
   <div class="combat-modal-bg modal-bg">
     <div class="combat-modal">
-      <div class="modal-stuff">
-        <p class="modal-text"></p>
+      <div class="combat-vs-area">
+        <h6 class="combat-versus">VS.</h6>
       </div>
-      <div class="combat-modal-btns modal-btns">
-        <div class="modal-btn"><div class="modal-btn-text">Yes</div></div>
-        <div class="modal-btn"><div class="modal-btn-text">No</div></div>
+      <div class="combat-grid">
+        <div class="combat-playerview">
+          <h5 class="combat-viewtitle combat-playertitle">Adventurer</h5>
+        </div>
+        <div class="combat-enemyview">
+          <h5 class="combat-viewtitle combat-enemytitle">Enemy</h5>
+        </div>
+        <div class="combat-playerstats">
+          <ul class="combat-stat-list">
+            <li class="combat-stat combat-hp">
+              <div class="combat-label combat-hp-label">HP</div>
+              <div class="combat-bar combat-hp-bar">
+                <div class="combat-amt combat-hp-amt combat-player-hp"></div>
+              </div>
+            </li>
+            <li class="combat-stat combat-sp">
+              <div class="combat-label combat-sp-label">SP</div>
+              <div class="combat-bar combat-sp-bar">
+                <div class="combat-amt combat-sp-amt combat-player-sp"></div>
+              </div>
+            </li>
+            <li class="combat-stat combat-cd">
+              <div class="combat-label combat-cd-label">CD</div>
+              <div class="combat-bar combat-cd-bar">
+                <div class="combat-amt combat-cd-amt combat-player-cd"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="combat-enemystats">
+          <ul class="combat-stat-list">
+            <li class="combat-stat combat-hp">
+              <div class="combat-label combat-hp-label">HP</div>
+              <div class="combat-bar combat-hp-bar">
+                <div class="combat-amt combat-hp-amt combat-enemy-hp"></div>
+              </div>
+            </li>
+            <li class="combat-stat combat-cd">
+              <div class="combat-label combat-cd-label">CD</div>
+              <div class="combat-bar combat-cd-bar">
+                <div class="combat-amt combat-cd-amt combat-enemy-cd"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="combat-log"></div>
+        <div class="combat-entry">
+          <div class="combat-input-area">
+            <input type="text" class="combat-input"></input>
+          </div>
+        </div>
       </div>
     </div>
   </div>

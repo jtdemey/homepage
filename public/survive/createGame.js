@@ -100,8 +100,9 @@ function createEnemy(eid) {
   };
   switch(eid) {
     case 0:
-      e.display = "Wolf"; e.health = randomFromSet([12, 13, 14, 15]); e.attack = 65; e.speed = 6;
+      e.display = "Wolf"; e.health = randomFromSet([12, 13, 14, 15]); e.maxHealth = parseInt(e.health); e.attack = 65; e.speed = 4;
       e.abilities.push(['normal', 7, 13, 'bite']);
+      e.abilities.push(['intimidate', 1, 5, 'growl']);
       break;
   }
   return e;
@@ -136,7 +137,7 @@ function createItem(n, am) {
   return item;
 }
 //Attack funcs
-var normalAttack, drainAttack, multiHitAttack = function() { return; };
+var normalAttack, drainAttack, multiHitAttack, healAttack, intimidateAttack = function() { return; };
 //Generation funcs
 function generateRoads() {
   var rid = 0;
