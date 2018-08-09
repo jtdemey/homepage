@@ -680,9 +680,17 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
         }
         $('.mainconsole').css({ 'background': hpgradient });
         if($('.combat-modal-bg').css('display') != 'none') {
-          var damspan = $('<div class="hp-damage"></div>');
-          $('.combat-playerstats').append(damspan);
-          $('.damspan').animate({ 'bottom': '+=20px' }).remove();
+          var damspan = $('<div class="php-damage" style="position:absolute;color:red;">' + am + '</div>').css({
+            'position': 'absolute',
+            'color': 'red',
+            'bottom': '65%',
+            'left': '25%',
+            'opacity': '1'
+          });
+          $('.combat-stat-list').append(damspan);
+          $('.php-damage').animate({ 'bottom': '+=30px', 'opacity': '0' }, 1000, function() {
+            $(this).remove();
+          });
         }
       } else if(stat == 'sanity') {
         Player.sanity -= am;
@@ -711,12 +719,14 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       $('#splash-sub1').text(getTimeSurvived(gameTime));
       $('#splash-sub2').text();
       $('.splash-subtitle').fadeIn(500);
-      var retryButton = $('<div class="splash-retry-btn"></div>');
+      var retryButton = $('<div class="splash-retry-btn">Retry</div>');
+      $('.splash-titles').append(retryButton);
     }
     startCombat = function(enemy) {
       Player.inCombat = true;
       Player.lastCombat = tick;
       Player.currentEnemy = enemy;
+      $('.combat-enemytitle').text(enemy.display);
       $('.combat-modal-bg').fadeIn(100);
       $('.combat-input').focus();
     };
