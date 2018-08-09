@@ -100,7 +100,7 @@ function createEnemy(eid) {
   };
   switch(eid) {
     case 0:
-      e.display = "Wolf"; e.health = randomFromSet([12, 13, 14, 15]); e.maxHealth = parseInt(e.health); e.attack = 65; e.speed = 4;
+      e.enemyID = eid; e.display = "Wolf"; e.health = randomFromSet([12, 13, 14, 15]); e.maxHealth = parseInt(e.health); e.attack = 65; e.speed = 4;
       e.abilities.push(['normal', 7, 13, 'bite']);
       e.abilities.push(['intimidate', 1, 5, 'growl']);
       break;

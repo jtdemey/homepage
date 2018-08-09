@@ -97,6 +97,14 @@ html, body, .container-fluid {
   color: red;
 }
 
+.splash-retry-btn {
+  height: 25px;
+  width: 50px;
+  margin: auto;
+  border: 2px solid #6699ff;
+  border-radius: 2px;
+}
+
 /* Modals */
 
 .modal-bg {
