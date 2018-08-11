@@ -1,33 +1,10 @@
 <!DOCTYPE HTML>
-<!--
- ____________________
-/                    \
-!      |_| o         !
-!      | | |  o      !
-!                    !
-\____________________/
-         !  !
-         !  !
-         L_ !
-        / _)!
-       / /__L
- _____/ (____)
-        (____)
- _____  (____)
-      \_(____)
-         !  !
-         !  !
-         \__/ 
-         
-    Don't steal my stuff please.
-    Business inquiries: johntdemey@live.com
--->
 <html lang="en">
 <head>
   <title>IMPOSTER - JDGS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <link rel="stylesheet" href="iridium.css" title="Imposter Look">
+  <link rel="stylesheet" href="../css/iridium.css" title="Imposter Look">
   <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet"> 
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
@@ -38,6 +15,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
   <!-- Latest compiled and minified JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="/scripts/socket.io.js"></script>
 </head>
 <body>
   <div class="top-banner">
@@ -55,7 +33,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="http://localhost:4242/">Home</a>
+          <a class="navbar-brand" href="http://localhost:8081/">Home</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -156,8 +134,7 @@
 $(document).ready(function() {
 
     //Globals
-	const io = require('socket.io-client');
-    var localip = 'http://192.168.1.244:5260';
+    var localip = 'ws://localhost:4242/';
     var gameState = {};
     var scenarios = [];
     var playerSlot = 0;
@@ -165,10 +142,7 @@ $(document).ready(function() {
     var socketID = 0;
     var socketName = "<none>";
     var gc = window.location.href.split("/")[4];
-    var socket = io.connect(localip, {
-		path: '/scripts/socket.io.js',
-		transports: ['polling', 'websocket', 'transport']
-	});
+    var socket = io(localip);
 
     //Buttons
     $('.postpone-btn').on('click', function() {
@@ -207,7 +181,6 @@ $(document).ready(function() {
 
     //Setup
     socket.on('setup', function(data) {
-		console.log("Setting up socket info...");
         $('.imposter-gc').html("GAMECODE: <strong>" + gc + "</strong>").css("font-size","1.5em");
         socketID = data.socketId;
         socket.emit('sendGC', {
@@ -292,6 +265,7 @@ $(document).ready(function() {
             console.log("Error in setupPh3: unable to find imposter");
         }
         $('.il-timer-area').fadeOut();
+        $('.iw-h1').html('The <strong>Imposter</strong> wins.');
         $('.iw-h2').text(gameState.players[imp] + " chose the correct scenario.");
         $('.imposter-game-view').fadeOut(function() {
             $('.imposter-win-view').fadeIn();
@@ -367,7 +341,12 @@ $(document).ready(function() {
         var replaytxt = $('<h4 class="replay-vote-txt centertext"></h4>')
             .text(gameState.players[gameState.votes.replay.callerslot] + ' wants a new scenario');
         var replaytimer = $('<h5 class="replay-timer centertext"></h5>').text(gameState.votes['replay'].time);
-        var replayamt = $('<h5 class="replay-amount centertext"></h5>').text('1 / ' + Math.round(gameState.playerct / 2) + ' votes');
+        if(gameState.playerct < 3) {
+            var threshold = 2;
+        } else {
+            var threshold = Math.ceil(gameState.playerct / 2);
+        }
+        var replayamt = $('<h5 class="replay-amount centertext"></h5>').text('1 / ' + threshold + ' votes');
         var replaybtn = $('<button class="btn btn-lg btn-block replay-agree"></button>').on('click', function() {
             socket.emit('voteForReplay', {
                 slot: playerSlot
@@ -395,7 +374,7 @@ $(document).ready(function() {
         var restarttxt = $('<h4 class="restart-vote-txt centertext"></h4>')
             .text(gameState.players[gameState.votes.restart.callerslot] + ' wants to return to lobby');
         var restarttimer = $('<h5 class="restart-timer centertext"></h5>').text(gameState.votes['restart'].time);
-        var restartamt = $('<h5 class="restart-amount centertext"></h5>').text('1 / ' + Math.round(gameState.playerct / 2) + ' votes');
+        var restartamt = $('<h5 class="restart-amount centertext"></h5>').text('1 / ' + Math.ceil(gameState.playerct / 2) + ' votes');
         var restartbtn = $('<button class="btn btn-lg btn-block restart-agree"></button>').on('click', function() {
             socket.emit('voteForRestart', {
                 slot: playerSlot

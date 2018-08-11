@@ -4,7 +4,7 @@
   <title>PISTOLWHIP - JDGS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <link rel="stylesheet" href="platinum.css" title="Imposter Look">
+  <link rel="stylesheet" href="../css/platinum.css" title="Imposter Look">
   <link href="https://fonts.googleapis.com/css?family=Bungee+Shade" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
@@ -97,8 +97,8 @@ $(document).ready(function() {
 	function preload() {
 		pistolwhip.load.image('p1', '/assets/pw_player1.png');
 		pistolwhip.load.image('ground', '/assets/ground.png');
-		pistolwhip.load.image('platform', '/assets/platform.png');
-		pistolwhip.load.image('sunset', '/assets/sunset.png');
+		//pistolwhip.load.image('platform', '/assets/platform.png');
+		//pistolwhip.load.image('sunset', '/assets/sunset.png');
 		pistolwhip.load.image('day', '/assets/day.png');
 		pistolwhip.load.image('shot1', '/assets/shot1.png');
 	}
@@ -113,8 +113,8 @@ $(document).ready(function() {
 		var ground = solids.create(0, pistolwhip.world.height-32, 'ground');
 			ground.scale.setTo(2, 2);
 			ground.body.immovable = true;
-		var platform = solids.create(160, 400, 'platform');
-			platform.body.immovable = true;
+		//var platform = solids.create(160, 400, 'platform');
+			//platform.body.immovable = true;
 		p1 = pistolwhip.add.sprite(50, 400, 'p1');
 			pistolwhip.physics.arcade.enable(p1);
 			p1.body.bounce.y = 0.2;
@@ -136,7 +136,7 @@ $(document).ready(function() {
 				pos = false;
 			}
 		}
-		triw = Math.floor(Math.random() * 300) + 100;
+		triw = Math.floor(Math.random() * 50) + 20;
 		if(pos == true) {
 			trih = Math.floor(Math.random() * 80) + 10;
 		} else {
@@ -149,11 +149,12 @@ $(document).ready(function() {
 		);
 		slopeind = slopeind + triw;
 		slopes.push(slope);
+		console.log(slopes);
 	}
 	
 	function update() {
 		var solidCollide = pistolwhip.physics.arcade.collide(p1, solids);
-		p1.body.setZeroVelocity();
+		p1.body.velocity = 0;
 		//Input
 		if(pistolwhip.input.pointer1.isDown) {
 			//Shoot
