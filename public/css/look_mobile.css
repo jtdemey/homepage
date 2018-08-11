@@ -1,0 +1,235 @@
+/* COLORS SCHEMES
+Gradients:
+	Home: #999999, #a6a6a6
+	Projects: #16222A (navy), #3A6073 (blue)
+	Tunes: #8E0E00 (red), #1F1C18 (black)
+	Contact: #56ab2f (green), #a8e063 (lime)
+*/
+* {
+	font-family: "Arial";
+	padding: 0;
+	margin: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+a {
+	color: #0b3300;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #9bff80;
+	text-decoration: none;
+}
+
+h1 {
+	font-family: "Abel", sans-serif;
+}
+
+h4 {
+	font-size: 200%;
+}
+
+h5, h6 {
+	padding: 0;
+}
+
+html, body, #container {
+	background: #999999;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.banner-area {
+	display: flex;
+	height: 98px;
+	background: linear-gradient(to right, white, #d9d9d9);
+	border-bottom: 2px solid#595959;
+}
+
+.jd-logo {
+	display: absolute;
+	margin-left: 1em;
+	margin-top: 0.3em;
+}
+
+.jd-title {
+	display: inline-block;
+	margin-left: 0.75em;
+	font-family: 'Abel', sans-serif;
+	font-size: 3em;
+	overflow: hidden;
+}
+
+.subtitle-area {
+	position: absolute;
+	right: 0.75em;
+	height: inherit;
+}
+
+.jd-subtitle {
+	font-family: 'Abel', sans-serif;
+	font-size: 1.5em;
+	display: flex;
+	align-items: center;
+	text-align: right;
+	overflow: hidden;
+	margin-top: 2em;
+	margin-right: 2em;
+}
+
+.main-row {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-area {
+	display: inline-block;
+	float: left;
+	height: 52px;
+	width: 100%;
+	background-color: #4d4d4d;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.nav-fixed {
+	position: fixed;
+	top: 0px;
+}
+
+.navbar {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+.navlist {
+	width: 86px;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	overflow: hidden;
+}
+
+.navlist li {
+	display: inline-block;
+	height: 86px;
+	width: 86px;
+	margin: auto;
+	align-items: center;
+	font-family: 'Abel', sans-serif;
+	margin-left: -1px;
+}
+
+.navlist li h5 {
+	margin-top: 2.5em;
+	margin-right: 0.32em;
+	color: white;
+}
+
+.content-area {
+	height: 100%;
+	padding: 0;
+	margin-left: 86px;
+}
+
+.content {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	background: linear-gradient(to right, #999999, #a6a6a6, #999999);
+}
+
+.content h1, .content p {
+	font-family: "Open Sans", sans-serif;
+}
+
+.home-content, .proj-content, .tunes-content, .contact-content {
+	display: block;
+	height: 120%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	float: left;
+	text-align: center;
+}
+
+.home-content {
+	background: linear-gradient(to right, #999999, #a6a6a6, #999999);
+}
+
+.proj-content {
+	background: linear-gradient(to right, #16222A, #3A6073);
+}
+
+.proj-icons {
+	width: inherit;
+	height: 128px;
+	margin-top: 7em;
+}
+
+.tile {
+	display: inline-block;
+	width: 128px;
+	height: 128px;
+	margin: 0px 48px 0px 48px;
+}
+
+.tile-abb {
+	font-family: "Open Sans", sans-serif;
+	color: white;
+	margin-bottom: 0.5em;
+}
+
+.tile-subtitle {
+	color: white;
+}
+
+.tunes-content {
+	background: linear-gradient(to right, #8E0E00, #1F1C18);
+}
+
+.contact-content {
+	background: linear-gradient(to right, #56ab2f, #a8e063);
+}
+
+.content-header {
+	padding-top: 3em;
+	padding-bottom: 1em;
+	color: white;
+}
+
+#contact-form {
+	width: 60%;
+	margin: auto;
+	margin-bottom: 5em;
+}
+
+#contact-name {
+	margin: 3em 0em 1em 0em;
+}
+
+#contact-content {
+	height: 6em;
+	margin: 1em 0em 1em 0em;
+}
+
+.subheader {
+	color: white;
+}
+
+footer {
+	
+}
