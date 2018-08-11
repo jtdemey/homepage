@@ -1,7 +1,9 @@
 /* _/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_ */
 /******************************************************************************************************/
+//Global configuration
+var DB_ENABLED = false;
 //0: desktop, 1: laptop
-var pathmode = 0;
+const pathmode = 0;
 //Setup
 console.log("Loading...");
 const express = require('express');
@@ -44,6 +46,7 @@ setTimeout(function() {
       return;
     } else {
       console.log("DB connection established.");
+      DB_ENABLED = true;
     }
     connection.release();
     connection.on('error', function(err) {
@@ -88,17 +91,16 @@ site.get('/', function(req, res) {
 	if(req.url == "/look.css") {
 		res.set("Content-Type", "text/css");
 		if(pathmode == 0) {
-			res.sendFile(path.resolve('D:/Servers/homepage/public/look.css'));
+			res.sendFile(path.resolve('D:/Servers/homepage/public/css/look.css'));
 		} else {
-			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/look.css'));
-			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/look_mobile.css'));
+			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/css/look.css'));
 		}
 	} else {
 		res.set("Content-Type", "text/html");
 		if(pathmode == 0) {
-			res.sendFile(path.resolve('D:/Servers/homepage/public/home.html'));
+			res.sendFile(path.resolve('D:/Servers/homepage/public/html/home.html'));
 		} else {
-			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/home.html'));
+			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/html/home.html'));
 		}
 	}
 });
@@ -108,25 +110,25 @@ site.get('/survive', function(req, res) {
 	if(req.url == "/survive/survive.css") {
 		res.set("Content-Type", "text/css");
 		if(pathmode == 0) {
-			res.sendFile(path.resolve('D:/Servers/homepage/public/survive_look.css'));
+			res.sendFile(path.resolve('D:/Servers/homepage/public/css/silver.css'));
 		} else {
-			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/survive_look.css'));
+			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/css/silver.css'));
 		}
 	} else {
 		res.set("Content-Type", "text/html");
 		if(pathmode == 0) {
-			res.sendFile(path.resolve('D:/Servers/homepage/public/survive.html'));
+			res.sendFile(path.resolve('D:/Servers/homepage/public/html/survive.html'));
 		} else {
-			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/survive.html'));
+			res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/html/survive.html'));
 		}
 	}
 });
 
 site.get('/gamesuite', function(req, res) {
   if(pathmode == 0) {
-    res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/lobby.html'));
+    res.sendFile(path.resolve('D:/Servers/homepage/public/html/lobby.html'));
   } else if(pathmode == 1) {
-    res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/lobby.html'));
+    res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/html/lobby.html'));
   }
 });
 
@@ -135,16 +137,16 @@ site.get('/tweetlord/:gameCode', function(req, res) {
   if(req.url == "/tweetlord/neon.css") {
     res.set("Content-Type", "text/css");
     if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/neon.css'));
+      res.sendFile(path.resolve('D:/Servers/homepage/public/css/neon.css'));
     } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/neon.css'));
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/css/neon.css'));
     }
   } else {
     res.set("Content-Type", "text/html");
     if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/tweetlord.html'));
+      res.sendFile(path.resolve('D:/Servers/homepage/public/html/tweetlord.html'));
     } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/tweetlord.html'));
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/html/tweetlord.html'));
     }
   }
 });
@@ -153,16 +155,16 @@ site.get('/imposter/:gameCode', function(req, res) {
   if(req.url == "/imposter/iridium.css") {
     res.set("Content-Type", "text/css");
     if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/iridium.css'));
+      res.sendFile(path.resolve('D:/Servers/homepage/public/css/iridium.css'));
     } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/iridium.css'));
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/css/iridium.css'));
     }
   } else {
     res.set("Content-Type", "text/html");
     if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/imposter.html'));
+      res.sendFile(path.resolve('D:/Servers/homepage/public/html/imposter.html'));
     } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/imposter.html'));
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/html/imposter.html'));
     }
   }
 });
@@ -171,22 +173,22 @@ site.get('/pistolwhip', function(req, res) {
     if(req.url == "/pistolwhip/platinum.css") {
     res.set("Content-Type", "text/css");
     if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/platinum.css'));
+      res.sendFile(path.resolve('D:/Servers/homepage/public/css/platinum.css'));
     } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/platinum.css'));
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/css/platinum.css'));
     }
   } else {
     res.set("Content-Type", "text/html");
     if(pathmode == 0) {
-      res.sendFile(path.resolve('D:/Servers/homepage/public/gamesuite/pistolwhip.html'));
+      res.sendFile(path.resolve('D:/Servers/homepage/public/html/pistolwhip.html'));
     } else if(pathmode == 1) {
-      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/gamesuite/pistolwhip.html'));
+      res.sendFile(path.resolve('/home/hydra/Apps/homepage/public/html/pistolwhip.html'));
     }
   }
 });
 
 site.get('/roleroller', function(req, res) {
-  res.sendFile(path.resolve('D:/Servers/homepage/public/roleroller.html'));
+  res.sendFile(path.resolve('D:/Servers/homepage/public/html/roleroller.html'));
 });
 /* _/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_/-\_ */
 /*******************************************************************************************************************************/
@@ -343,30 +345,36 @@ site.post('/scripts/joinGame', function(req, res) {
 site.post('/scripts/contact', function(req, res) {
   var name = htmlEncode(req.body.contactName);
   var text = htmlEncode(req.body.contactText);
-  connectBot.getConnection(function(err, connection) {
-    if(err) {
-      console.log('Error in storing contact request.');
-      console.log('From: ' + name);
-      console.log('Message: ' + text);
-      return;
-    }
-    connection.query("INSERT INTO contactRequests (requestName, requestBody) VALUES ('" + name + "', '" + text + "')", function(err, result, fields) {
-      connection.release();
+  if(DB_ENABLED == true) {
+    connectBot.getConnection(function(err, connection) {
       if(err) {
-        console.log('Error in saving contact request to db');
-        console.log(name + ' ' + text);
-        console.log(err);
+        console.log('Error in storing contact request.');
+        console.log('From: ' + name);
+        console.log('Message: ' + text);
         return;
       }
-      console.log('Contact request saved to db.');
+      connection.query("INSERT INTO contactRequests (requestName, requestBody) VALUES ('" + name + "', '" + text + "')", function(err, result, fields) {
+        connection.release();
+        if(err) {
+          console.log('Error in saving contact request to db');
+          console.log(name + ' ' + text);
+          console.log(err);
+          return;
+        }
+        console.log('Contact request saved to db.');
+      });
+      connection.on('error', function(err) {
+        console.log('Error in storing contact request.');
+        console.log('From: ' + name);
+        console.log('Message: ' + text);
+        return;
+      });
     });
-    connection.on('error', function(err) {
-      console.log('Error in storing contact request.');
-      console.log('From: ' + name);
-      console.log('Message: ' + text);
-      return;
-    });
-  });
+  } else {
+    console.log('Contact request received, but database interaction is disabled.');
+    console.log('From: ' + name);
+    console.log('Body: ' + text);
+  }
 });
 /*******************************************************************************************************************************/
 //Sockets
@@ -770,49 +778,31 @@ function logConnection(req) {
     visitaddr = req.connection.remoteAddress;
     visitproxy = 'none';
   }
-  connectBot.getConnection(function(err, connection) {
-    if(err) {
-      console.log('Error logging client connection ' + visitaddr + ' /// ' + visitproxy);
-      console.log(err);
-    } else {
-      connection.query("INSERT INTO visits (clientIP, clientProxy) VALUES ('" + visitaddr + "', '" + visitproxy + "')", function(err, result, fields) {
-        connection.release();
-        if(err) {
-          console.log('Error in logging connection.');
-          console.log(err);
-          return;
-        } else {
-          console.log('Client ' + visitaddr + ' connected with proxy = ' + visitproxy);
-        }
+  if(DB_ENABLED == true) {
+    connectBot.getConnection(function(err, connection) {
+      if(err) {
+        console.log('Error logging client connection ' + visitaddr + ' /// ' + visitproxy);
+        console.log(err);
+      } else {
+        connection.query("INSERT INTO visits (clientIP, clientProxy) VALUES ('" + visitaddr + "', '" + visitproxy + "')", function(err, result, fields) {
+          connection.release();
+          if(err) {
+            console.log('Error in logging connection.');
+            console.log(err);
+            return;
+          } else {
+            console.log('Client ' + visitaddr + ' connected with proxy = ' + visitproxy);
+          }
+        });
+      }
+      connection.on('error', function(err) {
+        console.log('Error in logging client connection ' + visitaddr + ' /// ' + visitproxy);
+        console.log(err);
       });
-    }
-    connection.on('error', function(err) {
-      console.log('Error in logging client connection ' + visitaddr + ' /// ' + visitproxy);
-      console.log(err);
     });
-  });
-}
-
-function restartApp() {
-    try {
-        for(var g in GAMELIST) {
-            delete g;
-        }
-        console.log("Webserver was halted");
-    } catch (e) {
-      console.log("Can't stop webserver: ");
-      console.log(e);
-    }
-    if(pathmode == 0) {
-        var sExecute = "node " + path.resolve('D:/Servers/homepage/app/homegs.js');
-    } else {
-        var sExecute = "node " + path.resolve('/home/hydra/Apps/homepage/app/homegs.js');
-    }
-    gamesuite.killed = true;
-    var exec = require('child_process').exec;
-    exec(sExecute, function () {
-        console.log('APPLICATION RESTARTED');
-    });
+  } else {
+    console.log('Client ' + visitaddr + ' connected with proxy = ' + visitproxy + ', but database interaction is disabled.');
+  }
 }
 /*******************************************************************************************************************************/
 serv.listen(PORT_NUM, function() {
