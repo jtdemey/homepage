@@ -1,0 +1,450 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <title>IMPOSTER - JDGS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="stylesheet" href="../css/iridium.css" title="Imposter Look">
+  <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="/scripts/socket.io.js"></script>
+</head>
+<body>
+  <div class="top-banner">
+    <div class="banner-jt">
+      <h1 class="banner-title" align="center"><span class="imposter-titlespan">Imposter</span></h1>
+    </div>
+  </div>
+  <div id="game-container">
+    <header>
+      <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://localhost:8081/">Home</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="" data-toggle="modal" data-target="#about-modal">About</a></li>
+            <li><a href="#">Quit</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <div id="about-modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">How to play Imposter</h4>
+          </div>
+          <div class="modal-body">
+            <p>Imposter is basically a clone of "Spyfall", but with different, more diverse scenarios.</p><br>
+            <h5>How to Play</h5>
+            <p>When the game starts, you are either shown a special scenario and your role in said scenario or you
+            are the randomly-chosen Imposter!</p><br>
+            <p>If you're <strong>not</strong> the Imposter, your job is to find who is in the same scenario as you
+            without tipping off the Imposter, who can guess the scenario from a list if you're too specific. Take turns
+            asking questions, and if someone seems like they don't belong, accuse them of being the Imposter.  If the
+            players <strong>unanimously</strong> decide that one person is the Imposter, the game ends.  If you've
+            correctly identified the Imposter, you win, but if you chose the wrong person, the Imposter wins.  If the time
+            runs out, a vote is immediately called.</p><br>
+            <p>If you're the Imposter, you've gotta blend in! Use deductive reasoning to choose the specific scenario that
+            your friends are in and you win. You can also win by letting the timer run out and convincing the rest of the players
+            to vote for someone else.</p>
+          </div> 
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="imposter-content">
+      <div class="imposter-lobby-view">
+        <ul class="il-player-list">
+          <li class="il-li1"></li>
+          <li class="il-li2"></li>
+          <li class="il-li3"></li>
+          <li class="il-li4"></li>
+          <li class="il-li5"></li>
+          <li class="il-li6"></li>
+          <li class="il-li7"></li>
+          <li class="il-li8"></li>
+          <li class="il-li9"></li>
+          <li class="il-li10"></li>
+        </ul>
+        <div class="imposter-lobby-gcp">
+          <h4 class="imposter-waiting">Waiting for players...</h4>
+          <h5 class="imposter-gc">GAMECODE:</h5>
+        </div>
+        <div class="imposter-game-view">
+          <div class="imposter-role-prompt">
+            <h2 class="role-prompt centertext"></h2>
+          </div>
+          <div class="imposter-scenario-prompt">
+            <h3 class="scenario-prompt centertext"></h3>
+          </div>
+        </div>
+        <div class="timeout-view">
+          <h2 class="tv-h1 centertext">Time's up!</h2>
+          <h4 class="tv-h2 centertext">Vote for who you think is the imposter.</h4>
+          <h4 class="tv-h3 centertext"><strong>Unanimously</strong> decide correctly or they win!</h4>
+        </div>
+        <div class="imposter-win-view">
+          <h2 class="iw-h1 centertext">The <strong>Imposter</strong> has won!</h2>
+          <h3 class="iw-h2 centertext"></h3>
+        </div>
+        <div class="il-timer-area">
+          <h4 class="il-ta-prompt centertext">Starting in:</h4>
+          <h3 class="il-timer centertext">(loading...)</h3>
+        </div>
+        <div class="imposter-voting-area">
+        </div>
+        <div class="imposter-lobby-btns">
+          <button class="btn btn-lg btn-block postpone-btn">Postpone</button>
+          <button class="btn btn-lg btn-block hurry-btn">Hurry Up</button>
+        </div>
+        <div class="imposter-game-btns">
+          <button class="btn btn-lg btn-block new-btn">New Scenario</button>
+          <button class="btn btn-lg btn-block restart-btn">Back to Lobby</button>
+        </div>
+        <div class="imposter-list-area">
+          <ul class="imposter-scenario-list">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script>
+$(document).ready(function() {
+
+    //Globals
+    var localip = 'ws://localhost:4242/';
+    var gameState = {};
+    var scenarios = [];
+    var playerSlot = 0;
+    var isImposter = false;
+    var socketID = 0;
+    var socketName = "<none>";
+    var gc = window.location.href.split("/")[4];
+    var socket = io(localip);
+
+    //Buttons
+    $('.postpone-btn').on('click', function() {
+      socket.emit("postpone");
+      console.log("Postpone request sent");
+    });
+
+    $('.hurry-btn').on('click', function() {
+      socket.emit('impatience');
+      console.log("Impatience sent");
+    });
+
+    $('.new-btn').on('click', function() {
+        if('replay' in gameState.votes) {
+            socket.emit('voteForReplay', {
+                slot: playerSlot
+            });
+        } else {
+            socket.emit('callReplayVote', {
+                slot: playerSlot
+            });
+        }
+    });
+
+    $('.restart-btn').on('click', function() {
+        if('restart' in gameState.votes) {
+            socket.emit('voteForRestart', {
+                slot: playerSlot
+            });
+        } else {
+            socket.emit('callRestartVote', {
+                slot: playerSlot
+            });
+        }
+    });
+
+    //Setup
+    socket.on('setup', function(data) {
+        $('.imposter-gc').html("GAMECODE: <strong>" + gc + "</strong>").css("font-size","1.5em");
+        socketID = data.socketId;
+        socket.emit('sendGC', {
+            gc: gc
+        });
+    });
+    
+    socket.on('playerJoin', function(data) {
+        console.log(data.player.name + " has joined as P" + data.player.slot);
+        playerSlot = data.player.slot;
+        socketName = data.player.name;
+        for(var i = 1; i <= 10; i++) {
+            $('.il-li' + i).text(data.gameState.players[i]);
+        }
+    });
+
+    socket.on('refreshPlayers', function(data) {
+        gameState = data.gameState;
+        for(var i = 1; i <= 10; i++) {
+            $('.il-li' + i).text(data.gameState.players[i]);
+        }
+    });
+
+    socket.on('setupPh0', function(data) {
+        gameState = data.gameState;
+        scenarios = data.scenarios;
+        $('.il-timer').text(data.gameState.timers[0]);
+    });
+
+    socket.on('setupPh1', function(data) {
+        gameState = data.gameState;
+        if(gameState.roles[playerSlot] == "Imposter") {
+            isImposter = true;
+        }
+        for(var i = 0; i < scenarios.length; i++) {
+            var locbtn = $("<button>", {id: ("scenario-btn" + i), "class": "btn btn-lg btn-block scenario-btn"});
+            var currscen = scenarios[i];
+            locbtn.text(currscen);
+            if(isImposter) {
+                locbtn.on('click', function() {
+                    if($(this).text() == gameState.scenario) {
+                        socket.emit("imposterVictory");
+                        console.log("Good guess... you aren't cheating, are ya?");
+                    } else {
+                        socket.emit("imposterFailure");
+                    }
+                });
+            }
+            $('.imposter-scenario-list').append(locbtn);
+        }
+        if(isImposter) {
+            $('.role-prompt').text("You're the Imposter!");
+            $('.scenario-prompt').text("Try to blend in...");
+        } else {
+            $('.role-prompt').text("You are: " + gameState.roles[playerSlot]);
+            $('.scenario-prompt').text("Scenario: " + gameState.scenario);
+        }
+        $('.il-ta-prompt').html("Time left:");
+        $('.imposter-waiting').fadeOut();
+        $('.imposter-lobby-gcp').fadeOut();
+        $('.imposter-lobby-btns').fadeOut(function() {
+            $('.imposter-game-view, .imposter-list-area, .imposter-game-btns').fadeIn();
+        });
+    });
+
+    socket.on('setupPh2', function(data) {
+        gameState = data.gameState;
+        $('.imposter-game-view').fadeOut(function() {
+            $('.timeout-view').fadeIn();
+        });
+    });
+
+    socket.on('setupPh3', function(data) {
+        gameState = data.gameState;
+        for(var p in gameState.roles) {
+            player = gameState.roles[p];
+            if(player == "Imposter") {
+                var imp = p;
+            }
+        }
+        if(!imp) {
+            console.log("Error in setupPh3: unable to find imposter");
+        }
+        $('.il-timer-area').fadeOut();
+        $('.iw-h1').html('The <strong>Imposter</strong> wins.');
+        $('.iw-h2').text(gameState.players[imp] + " chose the correct scenario.");
+        $('.imposter-game-view').fadeOut(function() {
+            $('.imposter-win-view').fadeIn();
+        });
+    });
+
+    socket.on('setupPh4', function(data) {
+        gameState = data.gameState;
+        for(var p in gameState.roles) {
+            player = gameState.roles[p];
+            if(player == "Imposter") {
+                var imp = p;
+            }
+        }
+        if(!imp) {
+            console.log("Error in setupPh4: unable to find imposter");
+        }
+        $('.il-timer-area').fadeOut();
+        $('.iw-h1').html('<strong>Bystanders</strong> win.');
+        $('.iw-h2').text(gameState.players[imp] + " done fucked up.");
+        $('.imposter-game-view').fadeOut(function() {
+            $('.imposter-win-view').fadeIn();
+        });
+    });
+
+    socket.on('restartGame', function(data) {
+        isImposter = false;
+        gameState = data.gameState;
+        if($('.imposter-game-view').is(':visible')) {
+            $('.imposter-game-view').fadeOut();
+        }
+        if($('.timeout-view').is(':visible')) {
+            $('.timeout-view').fadeOut();
+        }
+        if($('.imposter-win-view').is(':visible')) {
+            $('.imposter-win-view').fadeOut();
+        }
+        if($('.imposter-game-btns').is(':visible')) {
+            $('.imposter-game-btns').fadeOut();
+        }
+        if($('.imposter-list-area').is(':visible')) {
+            $('.imposter-list-area').fadeOut();
+        }
+        if($('.votebox').is(':visible')) {
+            $('.votebox').fadeOut(function() {
+                $('.votebox').remove();
+            });
+        }
+        $('.imposter-lobby-gcp, .il-timer-area, .imposter-lobby-btns, .imposter-waiting').fadeIn();
+    });
+
+    socket.on('replayGame', function(data) {
+        isImposter = false;
+        gameState = data.gameState;
+        if($('.timeout-view').is(':visible')) {
+            $('.timeout-view').fadeOut();
+        }
+        if($('.imposter-win-view').is(':visible')) {
+            $('.imposter-win-view').fadeOut();
+        }
+        if($('.votebox').is(':visible')) {
+            $('.votebox').fadeOut(function() {
+                $('.votebox').remove();
+            });
+        }
+        $('.imposter-scenario-list').empty();
+        $('.imposter-game-view, .il-timer-area, .imposter-game-btns').fadeIn();
+    });
+
+    //Votes
+    socket.on('replayVote', function(data) {
+        gameState = data.gameState;
+        var replaytxt = $('<h4 class="replay-vote-txt centertext"></h4>')
+            .text(gameState.players[gameState.votes.replay.callerslot] + ' wants a new scenario');
+        var replaytimer = $('<h5 class="replay-timer centertext"></h5>').text(gameState.votes['replay'].time);
+        if(gameState.playerct < 3) {
+            var threshold = 2;
+        } else {
+            var threshold = Math.ceil(gameState.playerct / 2);
+        }
+        var replayamt = $('<h5 class="replay-amount centertext"></h5>').text('1 / ' + threshold + ' votes');
+        var replaybtn = $('<button class="btn btn-lg btn-block replay-agree"></button>').on('click', function() {
+            socket.emit('voteForReplay', {
+                slot: playerSlot
+            });
+        }).text('Agree').css({
+            "width": "80%",
+            "margin": "auto"
+        });
+        var replaydiv = $('<div class="replay-vote votebox" id="replay-vote"></div>').css({
+            "height": "12em",
+            "width": "75%",
+            "margin": "auto",
+            "border-style": "double",
+            "border-width": "thick",
+            "margin-bottom": "1em",
+            "display": "none"
+        }).append(replaytxt).append(replaytimer).append(replayamt).append(replaybtn);
+        $('.imposter-voting-area').append(replaydiv);
+        replaydiv.fadeIn();
+    });
+
+    //Votes
+    socket.on('restartVote', function(data) {
+        gameState = data.gameState;
+        var restarttxt = $('<h4 class="restart-vote-txt centertext"></h4>')
+            .text(gameState.players[gameState.votes.restart.callerslot] + ' wants to return to lobby');
+        var restarttimer = $('<h5 class="restart-timer centertext"></h5>').text(gameState.votes['restart'].time);
+        var restartamt = $('<h5 class="restart-amount centertext"></h5>').text('1 / ' + Math.ceil(gameState.playerct / 2) + ' votes');
+        var restartbtn = $('<button class="btn btn-lg btn-block restart-agree"></button>').on('click', function() {
+            socket.emit('voteForRestart', {
+                slot: playerSlot
+            });
+        }).text('Agree').css({
+            "width": "80%",
+            "margin": "auto"
+        });
+        var restartdiv = $('<div class="restart-vote votebox" id="restart-vote"></div>').css({
+            "height": "12em",
+            "width": "75%",
+            "margin": "auto",
+            "border-style": "double",
+            "border-width": "thick",
+            "margin-bottom": "1em",
+            "display": "none"
+        }).append(restarttxt).append(restarttimer).append(restartamt).append(restartbtn);
+        $('.imposter-voting-area').append(restartdiv);
+        restartdiv.fadeIn();
+    });
+
+    socket.on('updateVotes', function(data) {
+        gameState = data.gameState;
+        if(gameState.votes.replay) {
+            $('.replay-amount').text(gameState.votes.replay.agree + " / " + Math.round(gameState.playerct / 2) + " votes");
+        }
+        if(gameState.votes.restart) {
+           $('.restart-amount').text(gameState.votes.restart.agree + " / " + Math.round(gameState.playerct / 2) + " votes");
+        }
+    });
+
+    //Ticks
+    socket.on('tickPh0', function(data) {
+        gameState = data.gameState;
+        $('.il-timer').text(data.gameState.timers[0]);
+    });
+
+    socket.on('tickPh1', function(data) {
+        gameState = data.gameState;
+        $('.il-timer').text(data.gameState.timers[1]);
+    });
+
+    socket.on('voteTick', function(data) {
+        gameState = data.gameState;
+        if(gameState.votes['replay']) {
+            if(gameState.votes['replay'].time < 0) {
+                $('.replay-vote').fadeOut(function() {
+                    $('.replay-vote').remove();
+                });
+            } else {
+                $('.replay-timer').text(gameState.votes['replay'].time);
+            }
+            $('.replay-amount').text(gameState.votes['replay'].agree + ' / ' + Math.round(gameState.playerct / 2) + ' votes');
+        }
+        if(gameState.votes['restart']) {
+            if(gameState.votes['restart'].time < 0) {
+                $('.restart-vote').fadeOut(function() {
+                    $('.restart-vote').remove();
+                });
+            } else {
+                $('.restart-timer').text(gameState.votes['restart'].time);
+            }
+            $('.restart-amount').text(gameState.votes['restart'].agree + ' / ' + Math.round(gameState.playerct / 2) + ' votes');
+        }
+    });
+
+    //Misc
+    socket.on('tooManyPostpones', function(data) {
+        alert("Whoa there, cowboy.  The show must go on.");
+    });
+
+});
+</script>

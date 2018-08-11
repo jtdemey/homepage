@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<!--
+ ____________________
+/                    \
+!      |_| o         !
+!      | | |  o      !
+!                    !
+\____________________/
+         !  !
+         !  !
+         L_ !
+        / _)!
+       / /__L
+ _____/ (____)
+        (____)
+ _____  (____)
+      \_(____)
+         !  !
+         !  !
+         \__/ 
+         
+    Don't steal my stuff please.
+    Business inquiries: johntdemey@live.com
+-->
+<html lang="en">
+<head>
+  <title>Survive</title>
+  <link rel="stylesheet" type="text/css" media="screen" href="../css/silver.css" title="Default">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="//cdn.jsdelivr.net/jquery.color-animation/1/mainfile"></script>
+</head>
+<body>
+  <div class="splash-screen">
+    <div class="splash-titles">
+      <h1 class="splash-title"></h1>
+      <h4 class="splash-subtitle" id="splash-sub0"></h4>
+      <h4 class="splash-subtitle" id="splash-sub1"></h4>
+      <h4 class="splash-subtitle" id="splash-sub2"></h4>
+    </div>
+  </div>
+  <div class="info-modal-bg modal-bg">
+    <div class="info-modal">
+      <div class="modal-stuff">
+        <p class="modal-text"></p>
+      </div>
+      <div class="info-modal-btns modal-btns">
+        <div class="modal-btn info-modal-btn" id="modal-btn1"><div class="modal-btn-text">Yes</div></div>
+        <div class="modal-btn info-modal-btn" id="modal-btn2"><div class="modal-btn-text">No</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="combat-modal-bg modal-bg">
+    <div class="combat-modal">
+      <div class="combat-vs-area">
+        <h6 class="combat-versus">VS.</h6>
+      </div>
+      <div class="combat-grid">
+        <div class="combat-playerview">
+          <h5 class="combat-viewtitle combat-playertitle">Adventurer</h5>
+        </div>
+        <div class="combat-enemyview">
+          <h5 class="combat-viewtitle combat-enemytitle">Enemy</h5>
+        </div>
+        <div class="combat-playerstats">
+          <ul class="combat-stat-list">
+            <li class="combat-stat combat-hp">
+              <div class="combat-label combat-hp-label">HP</div>
+              <div class="combat-bar combat-hp-bar">
+                <div class="combat-amt combat-hp-amt combat-player-hp"></div>
+              </div>
+            </li>
+            <li class="combat-stat combat-sp">
+              <div class="combat-label combat-sp-label">SP</div>
+              <div class="combat-bar combat-sp-bar">
+                <div class="combat-amt combat-sp-amt combat-player-sp"></div>
+              </div>
+            </li>
+            <li class="combat-stat combat-cd">
+              <div class="combat-label combat-cd-label">CD</div>
+              <div class="combat-bar combat-cd-bar">
+                <div class="combat-amt combat-cd-amt combat-player-cd"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="combat-enemystats">
+          <ul class="combat-stat-list">
+            <li class="combat-stat combat-hp">
+              <div class="combat-label combat-hp-label">HP</div>
+              <div class="combat-bar combat-hp-bar">
+                <div class="combat-amt combat-hp-amt combat-enemy-hp"></div>
+              </div>
+            </li>
+            <li class="combat-stat combat-cd">
+              <div class="combat-label combat-cd-label">CD</div>
+              <div class="combat-bar combat-cd-bar">
+                <div class="combat-amt combat-cd-amt combat-enemy-cd"></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="combat-log"></div>
+        <div class="combat-entry">
+          <div class="combat-input-area">
+            <input type="text" class="combat-input"></input>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+	<div class="survive-content">
+		<div class="game-viewport">
+			<div class="tickdisplay"></div>
+			<div class="mainconsole gameview" id="gameview1">
+				<div class="console-grid">
+					<div class="line-area"></div>
+					<div class="console-info">
+						<ul class="console-stats">
+							<li class="stat-health">
+								<img src="/survive/staticon1.svg" class="stat-icon hp-icon"></img>
+								<strong><span class="hp-amt">100</span></strong>
+							</li>
+							<li class="stat-temp">
+								<img src="/survive/staticon2.svg" class="stat-icon temp-icon"></img>
+								<strong><span class="temp-amt">100</span></strong>
+							</li>
+							<li class="stat-sanity">
+								<img src="/survive/staticon3.svg" class="stat-icon sanity-icon"></img>
+								<strong><span class="sanity-amt">100</span></strong>
+							</li>
+						</ul>
+						<ul class="console-exits">
+							<strong><li class="console-exit-dir">OUT:</li></strong>
+							<li class="console-exit-name">Woodlands</li>
+						</ul>
+					</div>
+				</div>
+				<div class="cl-area">
+					<input type="text" name="commandline" class="form-control commandline" placeholder=">>" autofocus></input>
+				</div>
+			</div>
+			<div class="inventory gameview" id="gameview2">
+        <div class="igv-header locale-header">
+					<h4 class="igv-title locale-title">CAR</h4>
+				</div>
+				<div class="igv-listarea locale-listarea">
+					<ul class="igv-list locale-list">
+					
+					</ul>
+				</div>
+				<div class="igv-header inventory-header">
+					<h4 class="igv-title inventory-title">INVENTORY</h4>
+				</div>
+				<div class="igv-listarea inventory-listarea">
+					<ul class="igv-list inventory-list">
+					
+					</ul>
+				</div>
+				<div class="igv-header crafting-header">
+					<h4 class="igv-title crafting-title">CRAFTING</h4>
+				</div>
+				<div class="igv-listarea crafting-listarea">
+					<ul class="igv-list crafting-list">
+					
+					</ul>
+				</div>
+			</div>
+			<div class="mapview gameview" id="gameview3">
+				<div class="map-grid"></div>
+			</div>
+			<div class="statusview gameview" id="gameview4">
+				
+			</div>
+		</div>
+		<div class="nav-tabs">
+			<div class="nav-tab home-tab" id="nav-tab1">
+        <span class="badge nav-badge nav-badge1 home-badge"></span>
+				<span class="tab-icon home-icon"><img class="tab-img" src="/survive/tabicon1.svg"></span>
+			</div>
+			<div class="nav-tab inventory-tab" id="nav-tab2">
+        <span class="badge nav-badge nav-badge2 inv-badge"></span>
+				<span class="tab-icon inventory-icon"><img class="tab-img" src="/survive/tabicon2.svg"></span>
+			</div>
+			<div class="nav-tab map-tab" id="nav-tab3">
+        <span class="badge nav-badge nav-badge3 map-badge"></span>
+				<span class="tab-icon map-icon"><img class="tab-img" src="/survive/tabicon5.svg"></span>
+			</div>
+			<div class="nav-tab status-tab" id="nav-tab4">
+        <span class="badge nav-badge nav-badge4 status-badge"></span>
+				<span class="tab-icon status-icon"><img class="tab-img" src="/survive/tabicon4.svg"></span>
+			</div>
+		</div>
+	</div>
+	<footer class="text-center">
+		<h6>Designed by JD</h6>
+		<h5>Current build: alpha1.3</h5>
+	</footer>
+</body>
+</html>
+<script src="/survive/survive.js"></script>
