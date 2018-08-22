@@ -1,28 +1,5 @@
 module.exports = {
-	assignRoles: function(gameState) {
-	    /**Scenarios
-	        -Animal Hospital
-	        -Bank Robbers
-	        -CIA Headquarters
-	        -Diamond Miners
-	        -Jungle Safari
-	        -Polar Expeditionists
-	        -Aristocratic House Party
-	        -Forest Hobo Camp
-	        -ISIS Camp
-	        -Plane Hijackers
-	        -Fight Club
-	        -Dungeons & Dragons Game
-	        -Greek Gods
-	        -Buddhist Monks
-	        -US Congress
-	        -Salem Witch Trials
-	        -Roman Crucifixion
-	        -Hogwarts Feast
-	        -High-Stakes Poker Game
-	        -Haunted House
-	    **/
-  var scenarios = {
+  scenarios: {
     0: {
       title: "Animal Hospital",
       roles: {
@@ -188,37 +165,56 @@ module.exports = {
         9: "Michael J. Fox"
       }
     }
-  }
-  console.log("###IMPOSTER### Building new Imposter gameState...");
-  var slen = Object.keys(scenarios).length;
-  var lroll = Math.floor(Math.random() * slen);
-  gameState.scenario = scenarios[lroll].title;
-  var noRoles = [1,2,3,4,5,6,7,8,9,10];
-  for(var i = 0; i < 10; i++) {
-    var pl = noRoles[Math.floor(Math.random() * noRoles.length)];
-    gameState.roles[pl] = scenarios[lroll].roles[i];
-    console.log("###IMPOSTER### P" + pl + " assigned " + scenarios[lroll].roles[i]);
-    noRoles.splice(noRoles.indexOf(pl), 1);
-  }
-  return gameState;
+  },
+	assignRoles: function(gameState) {
+	    /**Scenarios
+	        -Animal Hospital
+	        -Bank Robbers
+	        -CIA Headquarters
+	        -Diamond Miners
+	        -Jungle Safari
+	        -Polar Expeditionists
+	        -Aristocratic House Party
+	        -Forest Hobo Camp
+	        -ISIS Camp
+	        -Plane Hijackers
+	        -Fight Club
+	        -Dungeons & Dragons Game
+	        -Greek Gods
+	        -Buddhist Monks
+	        -US Congress
+	        -Salem Witch Trials
+	        -Roman Crucifixion
+	        -Hogwarts Feast
+	        -High-Stakes Poker Game
+	        -Haunted House
+	    **/
+    console.log("###IMPOSTER### Building new Imposter gameState...");
+    var slen = Object.keys(this.scenarios).length;
+    var lroll = Math.floor(Math.random() * slen);
+    gameState.scenario = this.scenarios[lroll].title;
+    var noRoles = [1,2,3,4,5,6,7,8,9,10];
+    for(var i = 0; i < 10; i++) {
+      var pl = noRoles[Math.floor(Math.random() * noRoles.length)];
+      gameState.roles[pl] = this.scenarios[lroll].roles[i];
+      console.log("##IMPOSTER## P" + pl + " assigned " + this.scenarios[lroll].roles[i]);
+      noRoles.splice(noRoles.indexOf(pl), 1);
+    }
+    return gameState;
 	},
 	getScenarios: function() {
-		var locations = ["Animal Hospital",
-      "Bank Robbers",
-      "CIA Headquarters",
-      "Diamond Miners",
-      "Jungle Safari",
-      "Polar Expeditionists",
-      "Aristocratic House Party",
-      "Forest Hobo Camp",
-      "ISIS Camp",
-      "Art Museum"	];
+		var locations = [];
+    for(var i = 0; i < Object.keys(this.scenarios).length; i++) {
+      var scen = this.scenarios[i];
+      if(scen.title) {
+        locations.push(scen.title);
+      }
+    }
 		return locations;
 	},
 	chooseImposter: function(g) {
 		var iroll = Math.floor(Math.random() * g.playerct);
       g.roles[iroll+1] = "Imposter";
-      console.log("###IMPOSTER### Imposter role assigned to P" + (iroll + 1));
       return g;
 	}
 }

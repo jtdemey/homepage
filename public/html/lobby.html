@@ -4,7 +4,7 @@
   <title>JD'S GAMESUITE</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <link rel="stylesheet" href="../css/xenon.css" title="Main Look">
+  <link rel="stylesheet" href="../css/lithium.css" title="Main Look">
   <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Fascinate+Inline" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Erica+One" rel="stylesheet">
@@ -20,6 +20,9 @@
   <script src="//cdn.jsdelivr.net/jquery.color-animation/1/mainfile"></script>
 </head>
 <body>
+
+  <!-- Header ----------------------->
+
   <div class="top-banner">
     <div class="banner-jt">
       <h1 class="banner-title" align="center"><span class="btitle1">Game</span><span class="btitle2">Suite</span></h1>
@@ -60,38 +63,15 @@
             see the instructions for any game, select it from the main menu and tap "About".</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-default" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
     </div>
+
+  <!-- Main ----------------------->
+
     <div class="lobby-content">
-      <!-- Main -->
-      <!-- DEPRECATED 
-      <div class="menu-view">
-        <ul class="lobby-menu">
-          <li class="lm-imposter"><span class="label label-info imposter-btn" data-toggle="collapse" data-target="#imposter-dd" style="padding-right:30px;">Imposter</span></li>
-            <div id="imposter-dd" class="collapse lm-dd">
-              <button class="imposter-new-btn btn btn-primary">New</button>
-              <button class="imposter-join-btn btn btn-info">Join</button>
-              <button class="imposter-about-btn btn"><a href="" data-toggle="modal" data-target="#imposter-modal">About</a></button>
-            </div>
-          <li class="lm-pistolwhip"><span class="label label-info pistolwhip-btn" data-toggle="collapse" data-target="#pistolwhip-dd">PistolWhip</span></li>
-            <div id="pistolwhip-dd" class="collapse lm-dd">
-              <button class="pistolwhip-new-btn btn btn-primary">New</button>
-              <button class="pistolwhip-join-btn btn btn-info">Join</button>
-              <button class="pistolwhip-about-btn btn" data-toggle="modal" data-target="#pistolwhip-modal">About</button>
-            </div>
-          <li class="lm-options"><span class="label label-info options-btn">Options&nbsp&nbsp&nbsp&nbsp&nbsp</span></li>
-        </ul>
-		    <div class="gameinfo-view">
-			    <h2 class="gameinfo-header">Imposter</h2>
-			    <div class="gameinfo-desc">
-				    <p class="gameinfo-blurb">Imposter Imposter Imposter Imposter Imposter Imposter Imposter Imposter Imposter</p>
-			    </div>
-	    	</div>
-      </div>
-      -->
       <div class="menu-view">
         <div class="lm-area">
           <div class="lm-selector"></div>
@@ -122,7 +102,9 @@
           <div class="mv-btn about-btn"><h5 class="mv-btn-label">About</h5></div>
         </div>
       </div>
-      <!-- About modals -->
+
+  <!-- Info Modals ----------------------->
+
       <div id="imposter-modal" class="modal fade" role="dialog">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -159,7 +141,7 @@
               <h4 class="modal-title">About Pistolwhip (WIP)</h4>
             </div>
             <div class="modal-body">
-              <p>Pistolwhip is a work in progress, beyotch</p>
+              <p>Pistolwhip is a work in progress, beyotch.</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -167,53 +149,43 @@
           </div>
         </div>
       </div>
+
+  <!-- Forms ----------------------->
+
       <!-- Imposter -->
       <div class="imposter-new-view new-view">
         <button class="btn btn-default back-btn">Back</button>
         <h4 class="nameprompt-header" align="center">What's your name?</h4>
-        <form action="/scripts/makeGame" method="post" name="name-prompt" id="name-prompt" class="form-horizontal">
-          <input type="hidden" name="gameTitle" value="imposter">
-          <input type="text" name="namepromptM" class="form-control" id="nameprompt-input" maxlength="16" placeholder="16 characters max" autofocus required>
+        <form name="imposter-new-prompt" class="form-horizontal game-prompt" id="imposter-new-prompt" onsubmit="event.preventDefault(); return imposterNewGame();">
+          <input type="hidden" name="gametitle" value="imposter">
+          <input type="text" name="namebox" class="form-control nameprompt-input" id="imposter-new-namebox" maxlength="16" placeholder="16 characters max" autofocus required>
           <div class="make-submit">
-            <button type="submit" name="make-game-submit" class="btn btn-primary">Start Game!</button>
+            <button type="submit" name="imposter-new-submit" class="btn btn-primary" id="imposter-new-submit">Start Game!</button>
           </div>
         </form>
       </div>
       <div class="imposter-join-view join-view">
         <button class="btn btn-default back-btn">Back</button>
-        <form action="/scripts/joinGame" method="post" name="gamecode-prompt" id="gamecode-prompt" class="form-horizontal">
-          <input type="hidden" name="gameTitle" value="imposter">
+        <form name="imposter-join-prompt" class="form-horizontal game-prompt" id="imposter-join-prompt" onsubmit="event.preventDefault(); return imposterJoinGame();">
+          <input type="hidden" name="gametitle" value="imposter">
           <h4 class="nameprompt-header" align="center">Choose a name</h4>
-          <input type="text" name="namepromptJ" class="form-control" id="nameprompt-input" maxlength="16" placeholder="16 characters max" autofocus required>
+          <input type="text" name="namebox" class="form-control" id="imposter-join-namebox" maxlength="16" placeholder="16 characters max" autofocus required>
           <h4 class="nameprompt-header" align="center">Enter game code</h4>
-          <input type="text" name="gameprompt" class="form-control" id="gameprompt-input" maxlength="6" autofocus required>
+          <input type="text" name="gcbox" class="form-control" id="imposter-join-gcbox" maxlength="6" autofocus required>
           <div class="join-submit">
-            <button type="submit" name="join-game-submit" class="btn btn-primary">Join Game!</button>
+            <button type="submit" name="imposter-join-submit" class="btn btn-primary" id="imposter-join-submit">Join Game!</button>
           </div>
         </form>
       </div>
-	  <!-- PistolWhip -->
+      <!-- PistolWhip -->
       <div class="pistolwhip-new-view new-view">
         <button class="btn btn-default back-btn">Back</button>
         <h4 class="nameprompt-header" align="center">What's your name?</h4>
-        <form action="/scripts/makeGame" method="post" name="name-prompt" id="name-prompt" class="form-horizontal">
-          <input type="hidden" name="gameTitle" value="pistolwhip">
-          <input type="text" name="namepromptM" class="form-control" id="nameprompt-input" maxlength="16" placeholder="16 characters max" autofocus required>
+        <form name="pistolwhip-new-prompt" class="form-horizontal game-prompt" id="pistolwhip-new-prompt" onsubmit="event.preventDefault(); return pistolwhipNewGame();">
+          <input type="hidden" name="gametitle" value="pistolwhip">
+          <input type="text" name="namebox" class="form-control" id="pistolwhip-new-namebox" maxlength="16" placeholder="16 characters max" autofocus required>
           <div class="make-submit">
-            <button type="submit" name="make-game-submit" class="btn btn-primary">Start Game!</button>
-          </div>
-        </form>
-      </div>
-      <div class="pistolwhip-join-view join-view">
-        <button class="btn btn-default back-btn">Back</button>
-        <form action="/scripts/joinGame" method="post" name="gamecode-prompt" id="gamecode-prompt" class="form-horizontal">
-          <input type="hidden" name="gameTitle" value="pistolwhip">
-          <h4 class="nameprompt-header" align="center">Choose a name</h4>
-          <input type="text" name="namepromptJ" class="form-control" id="nameprompt-input" maxlength="16" placeholder="16 characters max" autofocus required>
-          <h4 class="nameprompt-header" align="center">Enter game code</h4>
-          <input type="text" name="gameprompt" class="form-control" id="gameprompt-input" maxlength="6" autofocus required>
-          <div class="join-submit">
-            <button type="submit" name="join-game-submit" class="btn btn-primary">Join Game!</button>
+            <button type="submit" name="make-game-submit" class="btn btn-primary" id="pistolwhip-new-submit">Start Game!</button>
           </div>
         </form>
       </div>
@@ -227,8 +199,12 @@
 </body>
 </html>
 <script type="text/javascript">
+var imposterNewGame = function() {};
+var imposterJoinGame = function() {};
+var pistolwhipNewGame = function() {};
 $(document).ready(function() {
   var gameView = 0;
+  var viewChangeCD = false;
   $('.lm-imposter').stop().animate({color: 'white'}, 500);
   //Menu item listeners
   $('.lm-imposter').on('mousedown tap', function() {
@@ -273,86 +249,136 @@ $(document).ready(function() {
       $('.menu-view, .mvbtn-area').fadeIn(250);
     });
   });
+  //Form handling
+  imposterNewGame = function() {
+    var pName = $('#imposter-new-namebox').val();
+    var pl = {
+      'name': pName,
+      'gametitle': 'imposter'
+    };
+    $.ajax({
+      type: 'POST',
+      url: window.location + 'scripts/makeGame',
+      contentType: 'application/json',
+      dataType: 'json',
+      cache: false,
+      data: JSON.stringify(pl),
+      beforeSend: function(x) {
+        if (x && x.overrideMimeType) {
+          console.log('Overriding MIME type to UTF8');
+          x.overrideMimeType("application/j-son;charset=UTF-8");
+        }
+      },
+      success: function(data, status, jqreq) {
+        console.log('Creating new Imposter game...');
+        var newurl = window.location.toString().replace('/gamesuite/', '');
+        if(data.reqstatus == 'ready') {
+          newurl = newurl + '/imposter/' + data.gamecode;
+          window.location.href = newurl;
+        }
+        return true;
+      },
+      error: function(jqreq, status, err) {
+        console.log(err);
+        alert(err);
+        console.log(jqreq);
+        return false;
+      }
+    });
+  };
+  imposterJoinGame = function() {
+    var pName = $('#imposter-join-namebox').val();
+    var pGameCode = $('#imposter-join-gcbox').val();
+    var pl = {
+      'name': pName,
+      'gamecode': pGameCode,
+      'gametitle': 'imposter'
+    };
+    $.ajax({
+      type: 'POST',
+      url: window.location + 'scripts/joinGame',
+      contentType: 'application/json',
+      dataType: 'json',
+      cache: false,
+      data: JSON.stringify(pl),
+      beforeSend: function(x) {
+        if (x && x.overrideMimeType) {
+          console.log('Overriding MIME type to UTF8');
+          x.overrideMimeType("application/j-son;charset=UTF-8");
+        }
+      },
+      success: function(data, status, jqreq) {
+        if(data.reqstatus == 'error') {
+          console.log('Error in joining Imposter.');
+          alert(data.error);
+          return;
+        }
+        console.log('Joining Imposter game ' + data.gamecode + '...');
+        var newurl = window.location.toString().replace('/gamesuite/', '');
+        if(data.reqstatus == 'ready') {
+          newurl = newurl + '/imposter/' + data.gamecode;
+          window.location.href = newurl;
+        }
+        return true;
+      },
+      error: function(jqreq, status, err) {
+        console.log(err);
+        alert(err);
+        console.log(jqreq);
+        return false;
+      }
+    });
+  };
   //View changing
   function refreshGameChoice(id) {
-    gameView = id;
-    let n = '.lm-li' + id;
-    let p = 115 + (61 * id);
-    let q = p + 'px';
-    let r = 'none';
-    $('.lobby-menu li').stop().animate({color: '#cccccc'}, 250);
-    $(n).stop().animate({color: 'white'}, 500);
-    $('.lm-selector').stop().animate({top: q}, 400);
-    $('.gd').hide(function() {
-      setTimeout(function() {
-        if(id < 2 && $('.mv-btns').css('display') == 'none') {
-          $('.mv-btns').fadeIn(200);
-        }
-        if(id == 0) {
-          $('.gd-imposter').fadeIn(300);
-          if($('.join-btn').css('display') == 'none') {
-            $('.join-btn').fadeIn(200);
+    if(viewChangeCD === false) {
+      gameView = id;
+      let n = '.lm-li' + id;
+      let p = 115 + (61 * id);
+      let q = p + 'px';
+      let r = 'none';
+      $('.lobby-menu li').stop().animate({color: '#cccccc'}, 250);
+      $(n).stop().animate({color: 'white'}, 500);
+      $('.lm-selector').stop().animate({top: q}, 400);
+      $('.gd').hide(function() {
+        setTimeout(function() {
+          if(id < 2 && $('.mv-btns').css('display') == 'none') {
+            $('.mv-btns').fadeIn(200);
           }
-          $('.mv-btns').css({'grid-template-columns': '1fr 1fr 1fr'});
-        } else if(id == 1) {
-          $('.gd-pistolwhip').fadeIn(300);
-          $('.join-btn').fadeOut(200);
-          setTimeout(function() {
-            $('.mv-btns').css({'grid-template-columns': '1fr 1fr'});
-          }, 200);
-        } else if(id == 2) {
-          $('.gd-options').fadeIn(300);
-          $('.mv-btns').fadeOut(200);
-        }
-      }, 100);
-    });
+          if(id == 0) {
+            $('.gd-imposter').fadeIn(300);
+            if($('.join-btn').css('display') == 'none') {
+              $('.join-btn').fadeIn(200);
+            }
+            $('.mv-btns').css({'grid-template-columns': '1fr 1fr 1fr'});
+          } else if(id == 1) {
+            $('.gd-pistolwhip').fadeIn(300);
+            $('.join-btn').fadeOut(200);
+            setTimeout(function() {
+              $('.mv-btns').css({'grid-template-columns': '1fr 1fr'});
+            }, 200);
+          } else if(id == 2) {
+            $('.gd-options').fadeIn(300);
+            $('.mv-btns').fadeOut(200);
+          }
+        }, 100);
+      });
+      viewChangeCD = true;
+      setTimeout(function() {
+        viewChangeCD = false;
+      }, 800);
+    }
   }
-
-  /** DEPRECATED
-	var lmChoice = 0;
-
-	//Button listeners
-	$('.imposter-new-btn').on('click', function() {
-		lmChoice = 1;
-		$('.menu-view').fadeOut(function() {
-			$('.imposter-new-view').fadeIn();
-		});
-	});
-
-	$('.imposter-join-btn').on('click', function() {
-		lmChoice = 2;
-		$('.menu-view').fadeOut(function() {
-			$('.imposter-join-view').fadeIn();
-		});
-	});
-
-	$('.pistolwhip-new-btn').on('click', function() {	
-		lmChoice = 2;
-		$('.menu-view').fadeOut(function() {
-			$('.pistolwhip-new-view').fadeIn();
-		});
-	});
-
-	$('.pistolwhip-join-btn').on('click', function() {
-		lmChoice = 2;
-		$('.menu-view').fadeOut(function() {
-			$('.pistolwhip-join-view').fadeIn();
-		});
-	});
-
-	$('.options-btn').on('click', function() {
-		lmChoice = 3;
-		$('.menu-view').fadeOut(function() {
-			$('.options-view').fadeIn();
-		});
-	});
-
-	$('.back-btn').on('click', function() {
-		lmChoice = 0;
-		$('.new-view, .join-view, .options-view').fadeOut(function() {
-			$('.menu-view').fadeIn();
-		});
-	});
-  **/
+  function escapeInvalidJSONCharacters(jsonstr) {
+  return jsonstr.replace(/\n/g, "\\n")
+                .replace(/\r/g, "\\r")
+                .replace(/\t/g, "\\t")
+                .replace(/\f/g, "\\f")
+                .replace(/\\/g, "\\")
+                .replace('<', '')
+                .replace('>', '')
+                .replace('#', '')
+                .replace(String.fromCharCode(92),String.fromCharCode(92,92));
+  }
 });
 </script>

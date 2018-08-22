@@ -18,6 +18,22 @@
   <script src="/scripts/socket.io.js"></script>
 </head>
 <body>
+  <div id="confirm-scenario-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure the other players are in this scenario?</p>
+          </div> 
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Yes</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          </div>
+        </div>
+    </div>
+  </div>
   <div class="top-banner">
     <div class="banner-jt">
       <h1 class="banner-title" align="center"><span class="imposter-titlespan">Imposter</span></h1>
@@ -39,7 +55,7 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="" data-toggle="modal" data-target="#about-modal">About</a></li>
-            <li><a href="#">Quit</a></li>
+            <li><a href="/gamesuite">Quit</a></li>
           </ul>
         </div>
       </nav>
@@ -87,7 +103,12 @@
           <li class="il-li10"></li>
         </ul>
         <div class="imposter-lobby-gcp">
-          <h4 class="imposter-waiting">Waiting for players...</h4>
+          <h4 class="imposter-waiting">
+            Waiting for players
+            <span id="waiting-dot1">.</span>
+            <span id="waiting-dot2">.</span>
+            <span id="waiting-dot3">.</span>
+          </h4>
           <h5 class="imposter-gc">GAMECODE:</h5>
         </div>
         <div class="imposter-game-view">
@@ -121,6 +142,9 @@
           <button class="btn btn-lg btn-block new-btn">New Scenario</button>
           <button class="btn btn-lg btn-block restart-btn">Back to Lobby</button>
         </div>
+        <div class="imposter-scenario-prompt">
+          <h4 class="centertext">Possible scenarios:</h4>
+        </div>
         <div class="imposter-list-area">
           <ul class="imposter-scenario-list">
           </ul>
@@ -134,15 +158,27 @@
 $(document).ready(function() {
 
     //Globals
-    var localip = 'ws://localhost:4242/';
+    var localip = 'http://localhost:5260/';
     var gameState = {};
     var scenarios = [];
     var playerSlot = 0;
     var isImposter = false;
     var socketID = 0;
     var socketName = "<none>";
-    var gc = window.location.href.split("/")[4];
-    var socket = io(localip);
+    var gameCode = window.location.href.split("/")[4];
+    var waitingEllipsisAnimation = undefined;
+    var socket = io(localip, {
+      transports: ['polling', 'websocket']
+    });
+    
+    socket.on('reconnect_attempt', () => {
+      socket.io.opts.transports = ['polling', 'websocket'];
+    });
+    
+    window.onbeforeunload = function() {
+      return "Are you sure you want to leave the game?";
+      socket.close();
+    }
 
     //Buttons
     $('.postpone-btn').on('click', function() {
@@ -181,10 +217,10 @@ $(document).ready(function() {
 
     //Setup
     socket.on('setup', function(data) {
-        $('.imposter-gc').html("GAMECODE: <strong>" + gc + "</strong>").css("font-size","1.5em");
+        $('.imposter-gc').html("GAMECODE: <strong>" + gameCode + "</strong>").css("font-size","1.5em");
         socketID = data.socketId;
         socket.emit('sendGC', {
-            gc: gc
+            gameCode: gameCode
         });
     });
     
@@ -208,6 +244,7 @@ $(document).ready(function() {
         gameState = data.gameState;
         scenarios = data.scenarios;
         $('.il-timer').text(data.gameState.timers[0]);
+        startWaitingEllipsisAnimation();
     });
 
     socket.on('setupPh1', function(data) {
@@ -244,6 +281,7 @@ $(document).ready(function() {
         $('.imposter-lobby-btns').fadeOut(function() {
             $('.imposter-game-view, .imposter-list-area, .imposter-game-btns').fadeIn();
         });
+        $('.imposter-scenario-prompt').fadeIn(1200);
     });
 
     socket.on('setupPh2', function(data) {
@@ -368,7 +406,6 @@ $(document).ready(function() {
         replaydiv.fadeIn();
     });
 
-    //Votes
     socket.on('restartVote', function(data) {
         gameState = data.gameState;
         var restarttxt = $('<h4 class="restart-vote-txt centertext"></h4>')
@@ -445,6 +482,24 @@ $(document).ready(function() {
     socket.on('tooManyPostpones', function(data) {
         alert("Whoa there, cowboy.  The show must go on.");
     });
+    
+    socket.on('notEnoughPlayers', function(data) {
+      
+    });
+
+    function startWaitingEllipsisAnimation() {
+        waitingEllipsisAnimation = setInterval(function() {
+            $('#waiting-dot1, #waiting-dot2, #waiting-dot3').each(function(i) {
+                $(this).delay(i * 200).animate({
+                    'bottom': '+=20px'
+                }, 100, 'swing', function() {
+                    $(this).stop().animate({
+                        'bottom': '-=20px'
+                    });
+                });
+            });
+        }, 1000);
+    }
 
 });
 </script>

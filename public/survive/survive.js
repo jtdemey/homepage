@@ -146,7 +146,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
     //INITIATE
     Player.locale = gameMap.for_car;
     adjustTabs();
-    setTimeout(function() {
+    var clockStartTO = setTimeout(function() {
       startClock();
       refreshConsoleExits();
     }, 6500);
@@ -263,7 +263,26 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       openingSubFade(subtitles[0], 0);
       openingSubFade(subtitles[1], 1);
       openingSubFade(subtitles[2], 2);
-      setTimeout(openingTitleFade, 3500);
+      var titleFadeTO = setTimeout(openingTitleFade, 3500);
+      $('.splash-screen').on('mousedown', function() {
+        $(this).off();
+        console.log('aosidjf');
+        if(titleFadeTO) {
+          clearTimeout(titleFadeTO);
+          $('.splash-subtitle').fadeOut(400);
+          openingTitleFade();
+          setTimeout(function() {
+            $('.splash-title').animate({
+              'bottom': '+=200px',
+              'opacity': '0'
+            }, 1000, function() {
+              clearTimeout(clockStartTO);
+              startClock();
+              refreshConsoleExits();
+            });
+          }, 800);
+        }
+      });
     });
     function openingSubFade(sub, i) {
       var q = $.map(sub.split(''), function(l) {
@@ -284,6 +303,7 @@ $.getScript('/survive/Parser.js').done(function(script, textStatus) {
       }, 3300);
     }
     var openingTitleFade = function() {
+      console.log('bop');
       var title = 'Survive.';
       var q = $.map(title.split(''), function(l) {
         return $('<span>' + l + '</span>');
