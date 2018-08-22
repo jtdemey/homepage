@@ -199,7 +199,7 @@ function startGame(gameName) {
             title: "tweetlord",
             inProgress: false,
             joinable: true,
-            code: generateGC(),
+            gameCode: generateGC(),
             players: {1:"",2:"",3:"",4:"",5:"",6:""},
             playerct: 0,
             points: {1:0,2:0,3:0,4:0,5:0,6:0},
@@ -222,7 +222,7 @@ function startGame(gameName) {
             title: "imposter",
             inProgress: false,
             joinable: true,
-            code: generateGC(),
+            gameCode: generateGC(),
             players: {1:"",2:"",3:"",4:"",5:"",6:"",7:"",8:"",9:"",10:""},
             playerct: 0,
             timers: {0:60,1:360},
@@ -250,47 +250,59 @@ var PLAYERLIST = {};
 //Imposter functions
 var imposter = require('./imposterFuncs.js');
 /*******************************************************************************************************************************/
-//Lobby forms
-site.post('/scripts/makeGame', function(req, res) {
+//GS Lobby forms
+site.post('/gamesuite/scripts/makeGame', function(req, res) {
+  res.contentType('application/json');
+  var pl = req.body;
+  if(pl.gametitle == 'pistolwhip') {
+    res.writeHead(301, { Location: '/pistolwhip' });
+    res.end();
+    return;
+  }
   //Make game
-  var gameTitle = req.body.gameTitle;
-	if(gameTitle == "pistolwhip") {
-		res.writeHead(301, { Location: '/' + gameTitle });
-		res.end();
-		return;
-	}
+  var gameTitle = pl.gametitle;
   var newGame = startGame(gameTitle);
-      newGame.players[1] = req.body.namepromptM;
-      newGame.playerct += 1;
-      newGame.inProgress = true;
-  //req.session.gc = newGame.code;
-  GAMELIST[newGame.code] = newGame;
+    newGame.players[1] = pl.name;
+    newGame.playerct += 1;
+    newGame.inProgress = true;
+  GAMELIST[newGame.gameCode] = newGame;
   //Make player
   var playerid = Object.keys(PLAYERLIST).length + 1;
   var player = {
       id: playerid,
       slot: 1,
-      name: req.body.namepromptM,
-      gameTitle: req.body.gameTitle,
-      gc: newGame.code
+      name: pl.name,
+      gameTitle: pl.gametitle,
+      gameCode: newGame.gameCode
   }
   PLAYERLIST[player.id] = player;
   console.log("Player " + player.id + " created");
-  res.writeHead(301, { Location: '/' + gameTitle + '/' + newGame.code });
+  res.send({
+    'reqstatus': 'ready',
+    'gamecode': newGame.gameCode
+  });
   res.end();
 });
 
-site.post('/scripts/joinGame', function(req, res) {
-    var cgc = req.body.gameprompt;
-    var gameTitle = req.body.gameTitle;
-    var myGame = getGame(cgc);
+site.post('/gamesuite/scripts/joinGame', function(req, res) {
+    res.contentType('application/json');
+    var pl = req.body;
+    var myGame = getGame(pl.gamecode);
     if(myGame == "GameNotFound") {
-        res.status(500).send("No game exists with that game code");
+        res.setHeader('Content-Type', 'application/json');
+        res.send({
+          'reqstatus': 'error',
+          'error': 'No game exists with that game code.'
+        });
         res.end();
         return;
     }
     if(myGame.joinable == false) {
-        res.status(500).send("That game is currently in progress");
+        res.setHeader('Content-Type', 'application/json');
+        res.send({
+          'reqstatus': 'error',
+          'error': 'That game is currently in progress.'
+        });
         res.end();
         return;
     }
@@ -304,7 +316,11 @@ site.post('/scripts/joinGame', function(req, res) {
         }
     }
     if(isFull) {
-        res.status(500).send("Sorry, that game is full");
+        res.setHeader('Content-Type', 'application/json');
+        res.send({
+          'reqstatus': 'error',
+          'error': 'Sorry, that game is full.'
+        });
         res.end();
         return;
     }
@@ -312,19 +328,19 @@ site.post('/scripts/joinGame', function(req, res) {
     try {
         for(var i = 0; i < 6; i++) {
             //Be original
-            if(myGame.players[i] == req.body.namepromptJ) {
-                req.body.namepromptJ = "Other " + req.body.namepromptJ;
+            if(myGame.players[i] == req.body.namepromptJ && myGame.players[i] != undefined) {
+                pl.name = "Other " + pl.name;
             }
             if(myGame.players[i] == "") {
-                myGame.players[i] = req.body.namepromptJ;
+                myGame.players[i] = pl.name;
                 myGame.playerct += 1;
                 var playerid = Object.keys(PLAYERLIST).length + 1;
                 var player = {
                     id: playerid,
                     slot: i,
-                    name: req.body.namepromptJ,
-                    gameTitle: req.body.gameTitle,
-                    gc: myGame.code
+                    name: pl.name,
+                    gameTitle: pl.gametitle,
+                    gameCode: myGame.gameCode
                 }
                 PLAYERLIST[player.id] = player;
                 console.log("Player " + player.id + " created");
@@ -332,12 +348,18 @@ site.post('/scripts/joinGame', function(req, res) {
             }
         }
     } catch(err) {
-        res.status(500).send("Internal error in joining game");
+        res.setHeader('Content-Type', 'application/json');
+        res.send({
+          'reqstatus': 'error',
+          'error': 'Internal error in joining game.'
+        });
         res.end();
         return;
     }
-    //req.session.gc = myGame.code;
-    res.writeHead(301, { Location: '/' + gameTitle + '/' + cgc });
+    res.send({
+      'reqstatus': 'ready',
+      'gamecode': myGame.gameCode
+    });
     res.end();
 });
 
@@ -402,14 +424,14 @@ io.on('connection', function(socket) {
 
     socket.on('sendGC', function(data) {
         //Fetch and assign gamestate
-        socket.gc = data.gc;
-        socket.gameState = getGame(socket.gc);
-        console.log("Socket " + socket.id + " has joined game " + socket.gc);
+        socket.gameCode = data.gameCode;
+        socket.gameState = getGame(socket.gameCode);
+        console.log("Socket " + socket.id + " has joined game " + socket.gameCode);
         socket.emit('playerJoin', {
             gameState: socket.gameState,
             player: socket.player
         });
-        emitToGame('refreshPlayers', socket.gameState.code);
+        emitToGame('refreshPlayers', socket.gameState.gameCode);
         if(socket.gameState.phase == 0) {
             if(socket.gameState.title == "imposter") {
                 var ph0data = {
@@ -448,10 +470,10 @@ io.on('connection', function(socket) {
             }
         }
         if(isEmpty == true) {
-            console.log("Game " + socket.gameState.code + " abandoned: removing...");
-            delete GAMELIST[socket.gameState.code];
+            console.log("Game " + socket.gameState.gameCode + " abandoned: removing...");
+            delete GAMELIST[socket.gameState.gameCode];
         }
-        emitToGame('refreshPlayers', socket.gameState.code);
+        emitToGame('refreshPlayers', socket.gameState.gameCode);
         //Remove socket/player
         delete SOCKETLIST[socket.id];
         delete PLAYERLIST[socket.id];
@@ -491,12 +513,12 @@ io.on('connection', function(socket) {
     //~~~ Imposter ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     socket.on('imposterVictory', function() {
         socket.gameState.phase = 3;
-        emitToGame('setupPh3', socket.gameState.code);
+        emitToGame('setupPh3', socket.gameState.gameCode);
     });
 
     socket.on('imposterFailure', function() {
         socket.gameState.phase = 4;
-        emitToGame('setupPh4', socket.gameState.code);
+        emitToGame('setupPh4', socket.gameState.gameCode);
     });
 
     socket.on('callRestartVote', function(data) {
@@ -510,8 +532,8 @@ io.on('connection', function(socket) {
             }
             rvote.agreed.push(data.slot);
             socket.gameState.votes['restart'] = rvote;
-            console.log("###IMPOSTER### Vote for restart called by S" + socket.id + " for " + socket.gameState.code);
-            emitToGame('restartVote', socket.gameState.code);
+            console.log("###IMPOSTER### Vote for restart called by S" + socket.id + " for " + socket.gameState.gameCode);
+            emitToGame('restartVote', socket.gameState.gameCode);
         }
     });
 
@@ -519,20 +541,20 @@ io.on('connection', function(socket) {
         if('restart' in socket.gameState.votes && socket.gameState.votes['restart'].agreed.indexOf(socket.player.slot) == -1) {
             socket.gameState.votes['restart'].agree += 1;
             if(socket.gameState.votes.restart.agree >= Math.round(socket.gameState.playerct * .75)) {
-                console.log("###IMPOSTER### [" + socket.gameState.code + "] Restart vote successful, restarting game...");
+                console.log("###IMPOSTER### [" + socket.gameState.gameCode + "] Restart vote successful, restarting game...");
                 socket.gameState.joinable = true;
                 socket.gameState.timers[0] = 60;
                 socket.gameState.timers[1] = 360;
                 socket.gameState.phase = 0;
                 socket.gameState = imposter.assignRoles(socket.gameState);
-                emitToGame('restartGame', socket.gameState.code);
+                emitToGame('restartGame', socket.gameState.gameCode);
                 setTimeout(function() {
-                    emitToGame('setup', socket.gameState.code);
-                    emitToGame('setupPh0', socket.gameState.code);
+                    emitToGame('setup', socket.gameState.gameCode);
+                    emitToGame('setupPh0', socket.gameState.gameCode);
                 }, 800);
             }
         }
-        emitToGame('updateVotes', socket.gameState.code);
+        emitToGame('updateVotes', socket.gameState.gameCode);
     });
 
     socket.on('callReplayVote', function(data) {
@@ -546,8 +568,8 @@ io.on('connection', function(socket) {
             }
             rvote.agreed.push(data.slot);
             socket.gameState.votes['replay'] = rvote;
-            console.log("###IMPOSTER### Vote for replay called by S" + socket.id + " for " + socket.gameState.code);
-            emitToGame('replayVote', socket.gameState.code);
+            console.log("###IMPOSTER### Vote for replay called by S" + socket.id + " for " + socket.gameState.gameCode);
+            emitToGame('replayVote', socket.gameState.gameCode);
         }
     });
 
@@ -555,32 +577,33 @@ io.on('connection', function(socket) {
         if('replay' in socket.gameState.votes && socket.gameState.votes['replay'].agreed.indexOf(socket.player.slot) == -1) {
             socket.gameState.votes['replay'].agree += 1;
             if(socket.gameState.votes.replay.agree >= Math.round(socket.gameState.playerct * .75)) {
-                console.log("###IMPOSTER### [" + socket.gameState.code + "] Replay vote successful, resetting scenarios...");
+                console.log("###IMPOSTER### [" + socket.gameState.gameCode + "] Replay vote successful, resetting scenarios...");
                 socket.gameState.timers[0] = 60;
                 socket.gameState.timers[1] = 360;
                 socket.gameState.phase = 1;
                 socket.gameState = imposter.assignRoles(socket.gameState);
                 socket.gameState = imposter.chooseImposter(socket.gameState);
-                emitToGame('replayGame', socket.gameState.code);
+                emitToGame('replayGame', socket.gameState.gameCode);
                 setTimeout(function() {
-                    emitToGame('setupPh1', socket.gameState.code);
+                    emitToGame('setupPh1', socket.gameState.gameCode);
                 }, 800);
             }
         }
-        emitToGame('updateVotes', socket.gameState.code);
+        emitToGame('updateVotes', socket.gameState.gameCode);
     });
     //----------------------------------------------------------------
 });
 io.listen(serv);
 /******************************************************************************************************************************/
+var idletick = undefined;
 //Clock
 function idlePoll() {
     if(idle) {
-        var idlepoll = setInterval(function() {
+        idletick = setInterval(function() {
             if(Object.keys(GAMELIST).length > 0) {
                 console.log("Booting up!");
                 startClock();
-                clearInterval(idlepoll);
+                clearInterval(idletick);
             }
         }, 2000);
     }
@@ -588,7 +611,7 @@ function idlePoll() {
 idlePoll();
 function startClock() {
     tick = setInterval(function() {
-        if(Object.keys(GAMELIST).length == 0) {
+        if(Object.keys(GAMELIST).length < 1) {
             console.log("No games in progress, going idle...");
             idle = true;
             clearInterval(tick);
@@ -608,19 +631,19 @@ function startClock() {
             if(g.title == "imposter" && g.inProgress == true) {
                 if(g.phase == 0) {
                     g.timers[0] -= 1;
-                    emitToGame('tickPh0', g.code);
+                    emitToGame('tickPh0', g.gameCode);
                     if(g.timers[0] < 1) {
                         g.phase = 1;
                         g.joinable = false;
                         g = imposter.chooseImposter(g);
-                        emitToGame('setupPh1', g.code);
+                        emitToGame('setupPh1', g.gameCode);
                     }
                 } else if(g.phase == 1) {
                     g.timers[1] -= 1;
-                    emitToGame('tickPh1', g.code);
+                    emitToGame('tickPh1', g.gameCode);
                     if(g.timers[1] < 1) {
                         g.phase = 2;
-                        emitToGame('setupPh2', g.code);
+                        emitToGame('setupPh2', g.gameCode);
                     }
                     if(!isEmpty(g.votes)) {
                         for(v in g.votes) {
@@ -631,7 +654,7 @@ function startClock() {
                                 vote.time -= 1;
                             }
                         }
-                        emitToGame('voteTick', g.code);
+                        emitToGame('voteTick', g.gameCode);
                     }
                 }
             }
@@ -669,25 +692,27 @@ function contactEmail(req, res) {
 
 function emitToGame(event, gc) {
     if(Object.keys(GAMELIST).length == 0) {
-      console.log("No games in progress, going idle...");
-      idle = true;
-	  if(tick) {
-		clearInterval(tick);
-	  }
-      idlePoll();
+        console.log("No games in progress, going idle...");
+        idle = true;
+        if(tick) {
+		        clearInterval(tick);
+        }
+        idlePoll();
     }
     var found = false;
+    var game = getGame(gc);
     for(var s in SOCKETLIST) {
         var socket = SOCKETLIST[s];
-        if(socket.gc == gc) {
+        if(socket.gameCode == gc) {
             found = true;
             socket.emit(event, {
-                gameState: getGame(gc)
+                gameState: game
             });
         }
     }
     if(found == false) {
-        console.log("Error in emitToGame(" + event + "): unable to find game " + gc);
+        console.log("Error in emitToGame(" + event + "): no sockets connected to " + gc);
+        delete GAMELIST[gc];
     }
 }
 
@@ -701,14 +726,24 @@ function emitToGameC(event, gc, data) {
     var found = false;
     for(var s in SOCKETLIST) {
         var socket = SOCKETLIST[s];
-        if(socket.gc == gc) {
+        if(socket.gameCode == gc) {
             found = true;
             socket.emit(event, data);
         }
     }
     if(found == false) {
-        console.log("Error in emitToGameC(" + event + "): unable to find game " + gc);
+        console.log("Error in emitToGameC(" + event + "): no sockets connected to " + gc);
+        delete GAMELIST[gc];
     }
+}
+
+function escapeInvalidJSONCharacters(jsonstr) {
+  return jsonstr.replace(/\n/g, "\\n")
+                .replace(/\r/g, "\\r")
+                .replace(/\t/g, "\\t")
+                .replace(/\f/g, "\\f")
+                .replace(/\\/g, "\\")
+                .replace(String.fromCharCode(92),String.fromCharCode(92,92));
 }
 
 function generateGC() {
@@ -740,7 +775,7 @@ function getGame(gc) {
     var keys = Object.keys(GAMELIST);
     for(var i=0; i<keys.length; i++) {
         var g = GAMELIST[keys[i]];
-        if(g.code == gc) {
+        if(g.gameCode == gc) {
             found = 1;
             return g;
         }
